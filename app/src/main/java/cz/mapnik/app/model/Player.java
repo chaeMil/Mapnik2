@@ -6,10 +6,10 @@ package cz.mapnik.app.model;
 public class Player {
 
     private String name;
-    private Avatar avatar;
+    private String avatar;
     private int score;
 
-    public Player(String name, Avatar avatar) {
+    public Player(String name, String avatar) {
         this.name = name;
         this.avatar = avatar;
         this.score = 0;
@@ -27,7 +27,7 @@ public class Player {
         return score;
     }
 
-    public Avatar getAvatar() {
+    public String getAvatar() {
         return avatar;
     }
 }

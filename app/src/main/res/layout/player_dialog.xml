@@ -1,38 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="320dp"
+    android:layout_width="340dp"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.v7.widget.AppCompatEditText
         android:textSize="35dp"
+        android:hint="@string/app_name"
         android:id="@+id/playerNameEditText"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_margin="8dp" />
+        android:layout_margin="8dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:gravity="center"
+        android:singleLine="true" />
 
-    <LinearLayout
+    <GridLayout
         android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/avatars"
         android:layout_below="@+id/playerNameEditText"
-        android:layout_alignLeft="@+id/playerNameEditText"
-        android:layout_alignStart="@+id/playerNameEditText"
-        android:layout_alignRight="@+id/createPlayerButton"
-        android:layout_alignEnd="@+id/createPlayerButton"
-        android:id="@+id/linearLayout">
+        android:layout_centerHorizontal="true"
+        android:columnCount="4"
+        android:rowCount="3">
 
-    </LinearLayout>
+        <ImageView
+            android:alpha="0.5"
+            android:tag="avatar_m_cyan"
+            android:id="@+id/avatar_m_cyan"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:alpha="0.5"
+            android:tag="avatar_m_green"
+            android:id="@+id/avatar_m_green"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:alpha="0.5"
+            android:tag="avatar_w_cyan"
+            android:id="@+id/avatar_w_cyan"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:alpha="0.5"
+            android:tag="avatar_m_red"
+            android:id="@+id/avatar_w_red"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:alpha="0.5"
+            android:tag="avatar_m_green"
+            android:id="@+id/avatar_w_green"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:alpha="0.5"
+            android:tag="avatar_m_grey"
+            android:id="@+id/avatar_m_grey"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:alpha="0.5"
+            android:tag="avatar_m_yellow"
+            android:id="@+id/avatar_m_yellow"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:alpha="0.5"
+            android:tag="avatar_w_purple"
+            android:id="@+id/avatar_w_purple"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:alpha="0.5"
+            android:tag="avatar_m_yellow2"
+            android:id="@+id/avatar_m_yellow2"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:alpha="0.5"
+            android:tag="avatar_w_purple"
+            android:id="@+id/avatar_w_purple2"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:alpha="0.5"
+            android:tag="avatar_w_cyan2"
+            android:id="@+id/avatar_w_cyan2"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="8dp" />
+
+        <ImageView
+            android:alpha="0.5"
+            android:tag="avatar_m_red"
+            android:id="@+id/avatar_m_red"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="8dp" />
+
+
+    </GridLayout>
 
     <at.markushi.ui.CircleButton
         android:src="@drawable/ic_action_done"
         android:id="@+id/createPlayerButton"
         app:cb_color="@color/bright_purple"
         app:cb_pressedRingWidth="6dip"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_below="@+id/linearLayout"
-        android:layout_alignRight="@+id/playerNameEditText"
-        android:layout_alignEnd="@+id/playerNameEditText" />
+        android:layout_width="76dp"
+        android:layout_height="76dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/avatars" />
 
 </RelativeLayout>

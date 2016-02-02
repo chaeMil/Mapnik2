@@ -31,6 +31,10 @@ public class Mapnik extends Application {
         players.add(player);
     }
 
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
     public void resetGame() {
         players.clear();
     }
