@@ -2,10 +2,9 @@ package cz.mapnik.app;
 
 import android.app.Application;
 
-import com.google.android.gms.games.Player;
-
 import java.util.ArrayList;
 
+import cz.mapnik.app.model.Player;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
@@ -26,6 +25,10 @@ public class Mapnik extends Application {
         );
 
         players = new ArrayList<>();
+    }
+
+    public void addPlayer(Player player) {
+        players.add(player);
     }
 
     public void resetGame() {
