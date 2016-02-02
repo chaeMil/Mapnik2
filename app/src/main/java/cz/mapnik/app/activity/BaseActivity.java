@@ -1,10 +1,13 @@
 package cz.mapnik.app.activity;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by chaemil on 2.2.16.
@@ -20,6 +23,11 @@ public class BaseActivity extends AppCompatActivity {
         getUI();
 
         setupUI();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     private void getUI() {
