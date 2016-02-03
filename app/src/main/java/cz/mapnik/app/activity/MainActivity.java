@@ -135,7 +135,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (((Mapnik) getApplication()).getPlayers().size() >= 2) {
                     startActivity(new Intent(this, SetupGame.class));
                 } else {
-                    YoYo.with(Techniques.Pulse).duration(150).playOn(playersList);
+                    YoYo.with(Techniques.Pulse).duration(150).playOn(noPlayers);
                 }
                 break;
         }
