@@ -45,6 +45,11 @@
             android:configChanges="keyboardHidden|screenSize|orientation">
 
         </activity>
+
+        <activity android:name=".activity.MapPreviewActivity"
+            android:configChanges="keyboardHidden|screenSize|orientation">
+
+        </activity>
     </application>
 
 </manifest>

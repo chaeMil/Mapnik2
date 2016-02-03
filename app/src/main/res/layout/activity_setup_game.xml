@@ -176,7 +176,7 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_margin="4dp"
-                android:id="@+id/view"
+                android:id="@+id/previewLocationButton"
                 android:layout_centerVertical="true" />
 
         </RelativeLayout>

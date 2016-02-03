@@ -1,6 +1,7 @@
 package cz.mapnik.app.activity;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
@@ -47,6 +48,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
     private CircleButton confirmLocation;
     private LatLng cityLatLng;
     private ProgressBar geocoderProgress;
+    private CircleButton previewLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +80,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         locationCustom = (CircleButton) findViewById(R.id.location_custom);
         locationRandom = (CircleButton) findViewById(R.id.location_random);
         locationText = (TextView) findViewById(R.id.locationText);
+        previewLocation = (CircleButton) findViewById(R.id.previewLocationButton);
     }
 
     private void setupUI() {
@@ -92,6 +95,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         locationCustom.setOnClickListener(this);
         locationRandom.setOnClickListener(this);
         locationText.setOnClickListener(this);
+        previewLocation.setOnClickListener(this);
     }
 
     @Override
@@ -144,6 +148,13 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                     locationCityDialog.dismiss();
                 }
                 break;
+            case R.id.previewLocationButton:
+                if (game.getGameLocation() != null) {
+                    Intent previewMap = new Intent(this, MapPreviewActivity.class);
+                    previewMap.putExtra(MapPreviewActivity.PREVIEW_PIN_LAT_LNG, game.getGameLocation().getCenter());
+                    startActivity(previewMap);
+                    overridePendingTransition(0 ,0);
+                }
         }
     }
 
