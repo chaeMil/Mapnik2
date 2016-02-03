@@ -5,6 +5,7 @@ import android.app.Application;
 import java.util.ArrayList;
 
 import cz.mapnik.app.activity.MainActivity;
+import cz.mapnik.app.model.Game;
 import cz.mapnik.app.model.Player;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
@@ -14,6 +15,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 public class Mapnik extends Application {
 
     private ArrayList<Player> players;
+    private Game currentGame;
 
     @Override
     public void onCreate() {
@@ -50,5 +52,6 @@ public class Mapnik extends Application {
 
     public void resetGame() {
         players.clear();
+        currentGame = new Game();
     }
 }

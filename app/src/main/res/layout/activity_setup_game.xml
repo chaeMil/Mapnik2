@@ -160,8 +160,8 @@
                 android:layout_marginLeft="20dp">
 
                 <TextView
-                    android:id="@+id/players"
-                    tools:text="Player1, player2"
+                    android:id="@+id/location"
+                    tools:text="Prague"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
@@ -170,7 +170,7 @@
             </RelativeLayout>
 
             <at.markushi.ui.CircleButton
-                android:src="@drawable/ic_players"
+                android:src="@drawable/ic_location"
                 app:cb_color="@color/bright_green"
                 app:cb_pressedRingWidth="0dip"
                 android:layout_width="60dp"
