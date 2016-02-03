@@ -3,6 +3,8 @@ package cz.mapnik.app.activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatEditText;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -132,7 +134,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                         cityEditText.setEnabled(false);
                         MapnikGeocoder.getCityFromAddress(cityEditText.getText().toString().trim(), this);
                     } else {
-                        locationCityError();
+                        locationCityError(true);
                     }
                 } else {
                     locationCityDialog.dismiss();
@@ -151,22 +153,42 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
             locationText.setText(gameLocation.getName());
             cityEditText.setText(gameLocation.getName());
             cityEditText.selectAll();
+
+            cityEditText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    locationCityError(false);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
             game.setGameLocation(gameLocation);
             setLocation(Game.LocationType.CITY);
         } else {
-            locationCityError();
+            locationCityError(true);
         }
         cityEditText.setEnabled(true);
         geocoderProgress.setVisibility(View.GONE);
     }
 
-    private void locationCityError() {
+    private void locationCityError(boolean animate) {
         if (cityEditText != null) {
-            YoYo.with(Techniques.Tada).duration(150).playOn(cityEditText);
+            if (animate) {
+                YoYo.with(Techniques.Tada).duration(150).playOn(cityEditText);
+            }
             confirmLocation.setColor(getResources().getColor(R.color.red));
             confirmLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_search));
             locationText.setText("");
             game.setGameLocation(null);
+            setLocation(null);
         }
     }
 

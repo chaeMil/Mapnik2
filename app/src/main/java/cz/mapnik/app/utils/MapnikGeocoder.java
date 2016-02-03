@@ -37,6 +37,8 @@ public class MapnikGeocoder {
         Ion.with(caller).load(baseUrl + address).asJsonObject().setCallback(new FutureCallback<JsonObject>() {
             @Override
             public void onCompleted(Exception e, JsonObject result) {
+                GameLocation gameLocation = null;
+
                 if (result != null) {
                     SmartLog.Log(SmartLog.LogLevel.DEBUG, "result", result.toString());
 
@@ -63,34 +65,33 @@ public class MapnikGeocoder {
                                 }
                             }
 
-                            JsonObject geometry = results.get(0).getAsJsonObject().get("geometry").getAsJsonObject();
-                            JsonObject location = geometry.get("location").getAsJsonObject();
-                            LatLng centerLatLng = new LatLng(location.get("lat").getAsDouble(), location.get("lng").getAsDouble());
-                            LatLng northEast = null;
-                            LatLng southWest = null;
+                            if (!cityName.equals("")) {
 
-                            if (geometry.has("bounds")) {
-                                JsonObject northEastBounds = geometry.get("bounds").getAsJsonObject().get("northeast").getAsJsonObject();
-                                JsonObject southWestBounds = geometry.get("bounds").getAsJsonObject().get("southwest").getAsJsonObject();
+                                JsonObject geometry = results.get(0).getAsJsonObject().get("geometry").getAsJsonObject();
+                                JsonObject location = geometry.get("location").getAsJsonObject();
+                                LatLng centerLatLng = new LatLng(location.get("lat").getAsDouble(), location.get("lng").getAsDouble());
+                                LatLng northEast = null;
+                                LatLng southWest = null;
 
-                                northEast = new LatLng(northEastBounds.get("lat").getAsDouble(), northEastBounds.get("lng").getAsDouble());
-                                southWest = new LatLng(southWestBounds.get("lat").getAsDouble(), southWestBounds.get("lng").getAsDouble());
+                                if (geometry.has("bounds")) {
+                                    JsonObject northEastBounds = geometry.get("bounds").getAsJsonObject().get("northeast").getAsJsonObject();
+                                    JsonObject southWestBounds = geometry.get("bounds").getAsJsonObject().get("southwest").getAsJsonObject();
+
+                                    northEast = new LatLng(northEastBounds.get("lat").getAsDouble(), northEastBounds.get("lng").getAsDouble());
+                                    southWest = new LatLng(southWestBounds.get("lat").getAsDouble(), southWestBounds.get("lng").getAsDouble());
+                                }
+
+                                SmartLog.Log(SmartLog.LogLevel.DEBUG, "cityName", cityName);
+
+                                if (geometry.has("bounds")) {
+                                    gameLocation = new GameLocation(cityName, centerLatLng, northEast, southWest);
+                                }
                             }
-
-                            SmartLog.Log(SmartLog.LogLevel.DEBUG, "cityName", cityName);
-
-                            GameLocation gameLocation = new GameLocation(cityName, centerLatLng);
-
-                            if (geometry.has("bounds")) {
-                                gameLocation = new GameLocation(cityName, centerLatLng, northEast, southWest);
-                            }
-
-                            caller.geocodingFinished(strAddress, gameLocation);
                         }
                     }
                 }
 
-
+                caller.geocodingFinished(strAddress, gameLocation);
             }
 
         });

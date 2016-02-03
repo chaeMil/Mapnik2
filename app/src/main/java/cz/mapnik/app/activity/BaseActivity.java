@@ -65,6 +65,8 @@ public class BaseActivity extends AppCompatActivity implements GeocoderCallbacks
     @Override
     public void geocodingFinished(String strAddress, GameLocation gameLocation) {
         SmartLog.Log(SmartLog.LogLevel.DEBUG, "strAddress", strAddress);
-        SmartLog.Log(SmartLog.LogLevel.DEBUG, "gameLocation.name", gameLocation.getName());
+        if (gameLocation != null) {
+            SmartLog.Log(SmartLog.LogLevel.DEBUG, "gameLocation.name", gameLocation.getName());
+        }
     }
 }
