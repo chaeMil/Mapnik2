@@ -28,12 +28,18 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDBe0Ev3aL5Rotr6jkwv_e7Xzv_vtTgNBE"/>
 
-        <activity android:name=".activity.MainActivity">
+        <activity android:name=".activity.MainActivity"
+            android:configChanges="keyboardHidden|screenSize|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name=".activity.SetupGame"
+            android:configChanges="keyboardHidden|screenSize|orientation">
+
         </activity>
     </application>
 

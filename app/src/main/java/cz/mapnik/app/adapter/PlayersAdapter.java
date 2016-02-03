@@ -12,7 +12,10 @@ import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
 
+import at.markushi.ui.CircleButton;
+import cz.mapnik.app.Mapnik;
 import cz.mapnik.app.R;
+import cz.mapnik.app.activity.MainActivity;
 import cz.mapnik.app.model.Player;
 
 /**
@@ -20,13 +23,18 @@ import cz.mapnik.app.model.Player;
  */
 public class PlayersAdapter extends ArrayAdapter<Player> {
 
-    public PlayersAdapter(Context context, ArrayList<Player> players) {
+    private final MainActivity mainActivity;
+    private final Mapnik app;
+
+    public PlayersAdapter(Context context, ArrayList<Player> players, Mapnik app, MainActivity mainActivity) {
         super(context, 0, players);
+        this.mainActivity = mainActivity;
+        this.app = app;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Player player = getItem(position);
+        final Player player = getItem(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.player_list, parent, false);
@@ -34,6 +42,14 @@ public class PlayersAdapter extends ArrayAdapter<Player> {
 
         TextView name = (TextView) convertView.findViewById(R.id.name);
         ImageView avatar = (ImageView) convertView.findViewById(R.id.avatar);
+        CircleButton remove = (CircleButton) convertView.findViewById(R.id.removePlayer);
+
+        remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                app.removePlayer(player, mainActivity);
+            }
+        });
 
         name.setText(player.getName());
 

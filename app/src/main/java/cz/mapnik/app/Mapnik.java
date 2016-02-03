@@ -4,6 +4,7 @@ import android.app.Application;
 
 import java.util.ArrayList;
 
+import cz.mapnik.app.activity.MainActivity;
 import cz.mapnik.app.model.Player;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
@@ -27,8 +28,14 @@ public class Mapnik extends Application {
         players = new ArrayList<>();
     }
 
-    public void addPlayer(Player player) {
+    public void addPlayer(Player player, MainActivity caller) {
         players.add(player);
+        caller.notifyPlayersChanged();
+    }
+
+    public void removePlayer(Player player, MainActivity caller) {
+        players.remove(player);
+        caller.notifyPlayersChanged();
     }
 
     public ArrayList<Player> getPlayers() {

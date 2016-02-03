@@ -1,6 +1,8 @@
 package cz.mapnik.app.activity;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatEditText;
 import android.view.View;
@@ -47,6 +49,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private Dialog createPlayerDialog;
     private ListView playersList;
     private PlayersAdapter playersAdapter;
+    private ImageView noPlayers;
+    private boolean startSinglePlayer;
+    private CircleButton setupGameButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +77,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void setupUI() {
         playButton.setOnClickListener(this);
         closeButton.setOnClickListener(this);
-        playersAdapter = new PlayersAdapter(this, ((Mapnik) getApplication()).getPlayers());
+        playersAdapter = new PlayersAdapter(this, ((Mapnik) getApplication()).getPlayers(), ((Mapnik) getApplication()), this);
     }
 
     @Override
@@ -93,8 +98,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 finish();
                 break;
             case R.id.singlePlayerButton:
+                ((Mapnik) getApplication()).resetGame();
+                startSinglePlayer = true;
+                createPlayerDialog();
                 break;
             case R.id.multiPlayerButton:
+                ((Mapnik) getApplication()).resetGame();
                 createPlayersDialog(true);
                 break;
             case R.id.addPlayerButton:
@@ -116,19 +125,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     addPlayer(new Player(playerNameEditText.getText().toString(), avatar));
                     createPlayerDialog.dismiss();
                     SmartLog.Log(SmartLog.LogLevel.DEBUG, "players", String.valueOf(((Mapnik) getApplication()).getPlayers().size()));
+
+                    if (startSinglePlayer) {
+                        startActivity(new Intent(this, SetupGame.class));
+                    }
+                }
+                break;
+            case R.id.setupGameButton:
+                if (((Mapnik) getApplication()).getPlayers().size() >= 2) {
+                    startActivity(new Intent(this, SetupGame.class));
+                } else {
+                    YoYo.with(Techniques.Pulse).duration(150).playOn(playersList);
                 }
                 break;
         }
     }
 
     private void addPlayer(Player player) {
-
-        ((Mapnik) getApplication()).addPlayer(player);
-        playersAdapter.notifyDataSetChanged();
+        ((Mapnik) getApplication()).addPlayer(player, this);
     }
 
     private void createPlayDialog() {
         Dialog dialog = new Dialog(this);
+        dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.play_dialog);
 
         singleplayerButton = (CircleButton) dialog.findViewById(R.id.singlePlayerButton);
@@ -142,7 +161,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private void createPlayerDialog() {
         createPlayerDialog = new Dialog(this);
+        createPlayerDialog.setCanceledOnTouchOutside(false);
         createPlayerDialog.setContentView(R.layout.player_dialog);
+
+        createPlayerDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                startSinglePlayer = false;
+            }
+        });
 
         avatar_m_cyan = (ImageView) createPlayerDialog.findViewById(R.id.avatar_m_cyan);
         avatar_m_green = (ImageView) createPlayerDialog.findViewById(R.id.avatar_m_green);
@@ -199,11 +226,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private void createPlayersDialog(boolean multiplayer) {
         Dialog dialog = new Dialog(this);
+        dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.players_dialog);
 
         addPlayerButton = (CircleButton) dialog.findViewById(R.id.addPlayerButton);
         playersList = (ListView) dialog.findViewById(R.id.playersList);
+        noPlayers = (ImageView) dialog.findViewById(R.id.noPlayers);
+        setupGameButton = (CircleButton) dialog.findViewById(R.id.setupGameButton);
+
+        setupGameButton.setOnClickListener(this);
         playersList.setAdapter(playersAdapter);
+
 
         if (multiplayer) {
             addPlayerButton.setVisibility(View.VISIBLE);
@@ -229,4 +262,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
 
+    public void notifyPlayersChanged() {
+        playersAdapter.notifyDataSetChanged();
+        if (noPlayers != null) {
+            if (((Mapnik) getApplication()).getPlayers().size() > 0) {
+                noPlayers.setVisibility(View.GONE);
+            } else {
+                noPlayers.setVisibility(View.VISIBLE);
+            }
+        }
+    }
 }
