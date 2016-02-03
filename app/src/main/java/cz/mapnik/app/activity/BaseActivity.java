@@ -1,6 +1,5 @@
 package cz.mapnik.app.activity;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,8 +11,10 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 /**
  * Created by chaemil on 2.2.16.
  */
+
 public class BaseActivity extends AppCompatActivity {
 
+    private static final int REQUEST_LOCATION_PERMISSION = 42;
     private View decorView;
 
     @Override

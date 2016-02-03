@@ -1,5 +1,7 @@
 package cz.mapnik.app.model;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Created by chaemil on 3.2.16.
  */
@@ -8,14 +10,9 @@ public class Game {
     private Type type;
     private Time time;
     private Location location;
+    private LatLng startingLatLng;
 
     public Game() {
-    }
-
-    public Game(Type type, Time time, Location location) {
-        this.type = type;
-        this.time = time;
-        this.location = location;
     }
 
     public void setType(Type type) {
@@ -30,6 +27,10 @@ public class Game {
         this.location = location;
     }
 
+    public void setStartingLatLng(LatLng startingLatLng) {
+        this.startingLatLng = startingLatLng;
+    }
+
     public Type getType() {
         return type;
     }
@@ -40,6 +41,10 @@ public class Game {
 
     public Location getLocation() {
         return location;
+    }
+
+    public LatLng getStartingLatLng() {
+        return startingLatLng;
     }
 
     public enum Type {

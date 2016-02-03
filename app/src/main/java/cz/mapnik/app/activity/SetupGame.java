@@ -1,8 +1,14 @@
 package cz.mapnik.app.activity;
 
+import android.app.Dialog;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatEditText;
 import android.view.View;
 import android.widget.TextView;
+
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
@@ -11,6 +17,7 @@ import cz.mapnik.app.Mapnik;
 import cz.mapnik.app.R;
 import cz.mapnik.app.model.Game;
 import cz.mapnik.app.model.Player;
+import cz.mapnik.app.utils.MapnikGeocoder;
 
 /**
  * Created by chaemil on 3.2.16.
@@ -30,6 +37,11 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
     private CircleButton locationCustom;
     private CircleButton locationRandom;
     private Game game;
+    private Dialog locationCityDialog;
+    private AppCompatEditText cityEditText;
+    private CircleButton checkForLatLng;
+    private CircleButton confirmLocation;
+    private LatLng cityLatLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +111,8 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                 setTime(Game.Time.M5);
                 break;
             case R.id.location_cities:
-                setLocation(Game.Location.CITY);
+                setLocation(null);
+                createLocationCityDialog();
                 break;
             case R.id.location_monuments:
                 setLocation(Game.Location.MONUMENTS);
@@ -110,8 +123,36 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
             case R.id.location_random:
                 setLocation(Game.Location.RANDOM);
                 break;
+            case R.id.confirmLocation:
+                if (cityLatLng == null) {
+                    if (cityEditText.getText().length() > 0) {
+                        cityLatLng = MapnikGeocoder.getLocationFromAddress(this, cityEditText.toString().trim());
+                        if (cityLatLng != null) {
+                            confirmLocation.setColor(getResources().getColor(R.color.bright_green));
+                            locationText.setText(cityEditText.getText());
+                            game.setStartingLatLng(cityLatLng);
+                        } else {
+                            locationCityError();
+                        }
+                    } else {
+                        locationCityError();
+                    }
+                } else {
+                    locationCityDialog.dismiss();
+                }
+                break;
         }
     }
+
+    private void locationCityError() {
+        if (cityEditText != null) {
+            YoYo.with(Techniques.Tada).duration(150).playOn(cityEditText);
+            confirmLocation.setColor(getResources().getColor(R.color.red));
+            locationText.setText("");
+            game.setStartingLatLng(null);
+        }
+    }
+
 
     private void setType(Game.Type type) {
         typeMap.setColor(getResources().getColor(R.color.bright_green));
@@ -159,21 +200,42 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         locationCustom.setColor(getResources().getColor(R.color.bright_green));
         locationRandom.setColor(getResources().getColor(R.color.bright_green));
 
-        switch (location) {
-            case CITY:
-                locationCity.setColor(getResources().getColor(R.color.bright_purple));
-                break;
-            case MONUMENTS:
-                locationMonuments.setColor(getResources().getColor(R.color.bright_purple));
-                break;
-            case CUSTOM:
-                locationCustom.setColor(getResources().getColor(R.color.bright_purple));
-                break;
-            case RANDOM:
-                locationRandom.setColor(getResources().getColor(R.color.bright_purple));
-                break;
-        }
+        if (location == null) {
+            game.setLocation(null);
+        } else {
+            switch (location) {
+                case CITY:
+                    locationCity.setColor(getResources().getColor(R.color.bright_purple));
+                    break;
+                case MONUMENTS:
+                    locationMonuments.setColor(getResources().getColor(R.color.bright_purple));
+                    break;
+                case CUSTOM:
+                    locationCustom.setColor(getResources().getColor(R.color.bright_purple));
+                    break;
+                case RANDOM:
+                    locationRandom.setColor(getResources().getColor(R.color.bright_purple));
+                    break;
+            }
 
-        game.setLocation(location);
+            game.setLocation(location);
+        }
+    }
+
+    private void createLocationCityDialog() {
+        locationCityDialog = new Dialog(this);
+        locationCityDialog.setCanceledOnTouchOutside(false);
+        locationCityDialog.setContentView(R.layout.dialog_location_city);
+
+        cityLatLng = null;
+
+        cityEditText = (AppCompatEditText) locationCityDialog.findViewById(R.id.cityEditText);
+        checkForLatLng = (CircleButton) locationCityDialog.findViewById(R.id.checkForLatLng);
+        confirmLocation = (CircleButton) locationCityDialog.findViewById(R.id.confirmLocation);
+
+        checkForLatLng.setOnClickListener(this);
+        confirmLocation.setOnClickListener(this);
+
+        locationCityDialog.show();
     }
 }
