@@ -52,6 +52,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private ImageView noPlayers;
     private boolean startSinglePlayer;
     private CircleButton setupGameButton;
+    private Dialog createPlayersDialog;
+    private Dialog createPlayDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onResume() {
         super.onResume();
         ((Mapnik) getApplication()).resetGame();
+        dismissDialogs();
     }
 
     private void getUI() {
@@ -135,7 +138,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (((Mapnik) getApplication()).getPlayers().size() >= 2) {
                     startActivity(new Intent(this, SetupGame.class));
                 } else {
-                    YoYo.with(Techniques.Pulse).duration(150).playOn(noPlayers);
+                    YoYo.with(Techniques.Tada).duration(150).playOn(noPlayers);
                 }
                 break;
         }
@@ -146,17 +149,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void createPlayDialog() {
-        Dialog dialog = new Dialog(this);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setContentView(R.layout.play_dialog);
+        createPlayDialog = new Dialog(this);
+        createPlayDialog.setCanceledOnTouchOutside(false);
+        createPlayDialog.setContentView(R.layout.play_dialog);
 
-        singleplayerButton = (CircleButton) dialog.findViewById(R.id.singlePlayerButton);
-        multiplayerButton = (CircleButton) dialog.findViewById(R.id.multiPlayerButton);
+        singleplayerButton = (CircleButton) createPlayDialog.findViewById(R.id.singlePlayerButton);
+        multiplayerButton = (CircleButton) createPlayDialog.findViewById(R.id.multiPlayerButton);
 
         singleplayerButton.setOnClickListener(this);
         multiplayerButton.setOnClickListener(this);
 
-        dialog.show();
+        createPlayDialog.show();
     }
 
     private void createPlayerDialog() {
@@ -225,14 +228,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void createPlayersDialog(boolean multiplayer) {
-        Dialog dialog = new Dialog(this);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setContentView(R.layout.players_dialog);
+        createPlayersDialog = new Dialog(this);
+        createPlayersDialog.setCanceledOnTouchOutside(false);
+        createPlayersDialog.setContentView(R.layout.players_dialog);
 
-        addPlayerButton = (CircleButton) dialog.findViewById(R.id.addPlayerButton);
-        playersList = (ListView) dialog.findViewById(R.id.playersList);
-        noPlayers = (ImageView) dialog.findViewById(R.id.noPlayers);
-        setupGameButton = (CircleButton) dialog.findViewById(R.id.setupGameButton);
+        addPlayerButton = (CircleButton) createPlayersDialog.findViewById(R.id.addPlayerButton);
+        playersList = (ListView) createPlayersDialog.findViewById(R.id.playersList);
+        noPlayers = (ImageView) createPlayersDialog.findViewById(R.id.noPlayers);
+        setupGameButton = (CircleButton) createPlayersDialog.findViewById(R.id.setupGameButton);
 
         setupGameButton.setOnClickListener(this);
         playersList.setAdapter(playersAdapter);
@@ -243,7 +246,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             addPlayerButton.setOnClickListener(this);
         }
 
-        dialog.show();
+        createPlayersDialog.show();
     }
 
     private void resetAvatarsAlpha(float alpha) {
@@ -261,11 +264,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         avatar_w_red.setAlpha(alpha);
     }
 
+    private void dismissDialogs() {
+        if (createPlayDialog != null) {
+            createPlayDialog.dismiss();
+        }
+        if (createPlayerDialog != null) {
+            createPlayerDialog.dismiss();
+        }
+        if (createPlayersDialog != null) {
+            createPlayersDialog.dismiss();
+        }
+    }
+
 
     public void notifyPlayersChanged() {
         playersAdapter.notifyDataSetChanged();
         if (noPlayers != null) {
-            if (((Mapnik) getApplication()).getPlayers().size() > 0) {
+            if (((Mapnik) getApplication()).getPlayers().size() > 1) {
                 noPlayers.setVisibility(View.GONE);
             } else {
                 noPlayers.setVisibility(View.VISIBLE);
