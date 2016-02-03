@@ -54,4 +54,8 @@ public class Mapnik extends Application {
         players.clear();
         currentGame = new Game();
     }
+
+    public Game getCurrentGame() {
+        return currentGame;
+    }
 }

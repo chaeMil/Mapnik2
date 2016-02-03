@@ -9,6 +9,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -51,6 +52,8 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
     private ProgressBar geocoderProgress;
     private CircleButton previewLocation;
     private CircleButton close;
+    private CircleButton done;
+    private LinearLayout wrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +74,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
     }
 
     private void getUI() {
+        wrapper = (LinearLayout) findViewById(R.id.wrapper);
         typeMap = (CircleButton) findViewById(R.id.typeMap);
         typeAddress = (CircleButton) findViewById(R.id.typeAddress);
         time_30s = (CircleButton) findViewById(R.id.time_30sec);
@@ -84,6 +88,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         locationText = (TextView) findViewById(R.id.locationText);
         previewLocation = (CircleButton) findViewById(R.id.previewLocationButton);
         close = (CircleButton) findViewById(R.id.closeButton);
+        done = (CircleButton) findViewById(R.id.doneButton);
     }
 
     private void setupUI() {
@@ -100,6 +105,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         locationText.setOnClickListener(this);
         previewLocation.setOnClickListener(this);
         close.setOnClickListener(this);
+        done.setOnClickListener(this);
     }
 
     @Override
@@ -166,7 +172,21 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                 finish();
                 overridePendingTransition(0 ,0);
                 break;
+            case R.id.doneButton:
+                if (game != null
+                        &&game.getGameLocation() != null
+                        && game.getType() != null
+                        && game.getLocationType() != null
+                        && game.getTime() != null) {
 
+                    Intent prepareGame = new Intent(this, PrepareGameActivity.class);
+                    startActivity(prepareGame);
+                    finish();
+
+                } else {
+                    YoYo.with(Techniques.Pulse).duration(150).playOn(wrapper);
+                }
+                break;
         }
     }
 
