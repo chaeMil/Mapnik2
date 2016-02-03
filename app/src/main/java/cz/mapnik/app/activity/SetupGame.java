@@ -137,6 +137,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                 break;
             case R.id.location_monuments:
                 setLocation(Game.LocationType.MONUMENTS);
+                game.setGameLocation(new GameLocation(getString(R.string.monuments), new LatLng(0, 0)));
                 break;
             case R.id.location_custom:
                 Intent selectLocation = new Intent(this, MapSelectLocationActivity.class);
@@ -145,6 +146,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                 break;
             case R.id.location_random:
                 setLocation(Game.LocationType.RANDOM);
+                game.setGameLocation(new GameLocation(getString(R.string.random), new LatLng(0, 0)));
                 break;
             case R.id.confirmLocation:
                 if (game.getGameLocation() == null) {
