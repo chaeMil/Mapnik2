@@ -2,5 +2,5 @@
     <string name="app_name">Mapnik</string>
     <string name="already_exists">Already exists</string>
     <string name="prague">Prague...</string>
-    <string name="cannot_access_location">:( cannot access location</string>
+    <string name="cannot_access_location">:( cannot access locationType</string>
 </resources>

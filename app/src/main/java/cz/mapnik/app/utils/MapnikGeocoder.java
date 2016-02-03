@@ -1,12 +1,18 @@
 package cz.mapnik.app.utils;
 
-import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
-
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
-import java.util.List;
+import org.json.JSONArray;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import cz.mapnik.app.activity.BaseActivity;
+import cz.mapnik.app.model.GameLocation;
 
 /**
  * Created by chaemil on 3.2.16.
@@ -15,27 +21,80 @@ import java.util.List;
 
 public class MapnikGeocoder {
 
-    public static LatLng getLocationFromAddress(Context context, String strAddress){
+    public static void getCityFromAddress(final String strAddress, final BaseActivity caller) {
 
-        Geocoder coder = new Geocoder(context);
-        List<Address> address;
+        String baseUrl = "http://maps.googleapis.com/maps/api/geocode/json?address=";
 
+        String address = strAddress;
         try {
-            address = coder.getFromLocationName(strAddress, 5);
-
-            if (address == null) {
-                return null;
-            }
-
-            Address location = address.get(0);
-
-            return new LatLng(location.getLatitude(), location.getLongitude());
-
-        } catch (Exception e) {
-            SmartLog.Log(SmartLog.LogLevel.ERROR, "exception", e.toString());
+            address = URLEncoder.encode(strAddress, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
 
-        return null;
+        SmartLog.Log(SmartLog.LogLevel.DEBUG, "url", baseUrl + address);
+
+        Ion.with(caller).load(baseUrl + address).asJsonObject().setCallback(new FutureCallback<JsonObject>() {
+            @Override
+            public void onCompleted(Exception e, JsonObject result) {
+                if (result != null) {
+                    SmartLog.Log(SmartLog.LogLevel.DEBUG, "result", result.toString());
+
+                    if (result.has("status")) {
+
+                        SmartLog.Log(SmartLog.LogLevel.DEBUG, "result.has(status)", result.get("status").getAsString());
+
+                        if (result.get("status").getAsString().equals("OK")) {
+
+                            JsonArray results = result.getAsJsonArray("results");
+
+                            JsonArray addressComponents = results.get(0).getAsJsonObject().get("address_components").getAsJsonArray();
+
+                            String cityName = "";
+
+                            for (int a = 0; a < addressComponents.size(); a++) {
+                                JsonObject addressComponent = addressComponents.get(a).getAsJsonObject();
+                                JsonArray types = addressComponent.get("types").getAsJsonArray();
+                                for (int t = 0; t < types.size(); t++) {
+                                    if (types.get(t).getAsString().equals("locality")) {
+                                        cityName = addressComponent.get("long_name").getAsString();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            JsonObject geometry = results.get(0).getAsJsonObject().get("geometry").getAsJsonObject();
+                            JsonObject location = geometry.get("location").getAsJsonObject();
+                            LatLng centerLatLng = new LatLng(location.get("lat").getAsDouble(), location.get("lng").getAsDouble());
+                            LatLng northEast = null;
+                            LatLng southWest = null;
+
+                            if (geometry.has("bounds")) {
+                                JsonObject northEastBounds = geometry.get("bounds").getAsJsonObject().get("northeast").getAsJsonObject();
+                                JsonObject southWestBounds = geometry.get("bounds").getAsJsonObject().get("southwest").getAsJsonObject();
+
+                                northEast = new LatLng(northEastBounds.get("lat").getAsDouble(), northEastBounds.get("lng").getAsDouble());
+                                southWest = new LatLng(southWestBounds.get("lat").getAsDouble(), southWestBounds.get("lng").getAsDouble());
+                            }
+
+                            SmartLog.Log(SmartLog.LogLevel.DEBUG, "cityName", cityName);
+
+                            GameLocation gameLocation = new GameLocation(cityName, centerLatLng);
+
+                            if (geometry.has("bounds")) {
+                                gameLocation = new GameLocation(cityName, centerLatLng, northEast, southWest);
+                            }
+
+                            caller.geocodingFinished(strAddress, gameLocation);
+                        }
+                    }
+                }
+
+
+            }
+
+        });
+
     }
 
 }

@@ -16,6 +16,7 @@ import at.markushi.ui.CircleButton;
 import cz.mapnik.app.Mapnik;
 import cz.mapnik.app.R;
 import cz.mapnik.app.model.Game;
+import cz.mapnik.app.model.GameLocation;
 import cz.mapnik.app.model.Player;
 import cz.mapnik.app.utils.MapnikGeocoder;
 
@@ -39,7 +40,6 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
     private Game game;
     private Dialog locationCityDialog;
     private AppCompatEditText cityEditText;
-    private CircleButton checkForLatLng;
     private CircleButton confirmLocation;
     private LatLng cityLatLng;
 
@@ -72,7 +72,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         locationMonuments = (CircleButton) findViewById(R.id.location_monuments);
         locationCustom = (CircleButton) findViewById(R.id.location_custom);
         locationRandom = (CircleButton) findViewById(R.id.location_random);
-        locationText = (TextView) findViewById(R.id.location);
+        locationText = (TextView) findViewById(R.id.locationText);
     }
 
     private void setupUI() {
@@ -115,25 +115,18 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                 createLocationCityDialog();
                 break;
             case R.id.location_monuments:
-                setLocation(Game.Location.MONUMENTS);
+                setLocation(Game.LocationType.MONUMENTS);
                 break;
             case R.id.location_custom:
-                setLocation(Game.Location.CUSTOM);
+                setLocation(Game.LocationType.CUSTOM);
                 break;
             case R.id.location_random:
-                setLocation(Game.Location.RANDOM);
+                setLocation(Game.LocationType.RANDOM);
                 break;
             case R.id.confirmLocation:
-                if (cityLatLng == null) {
+                if (game.getGameLocation() == null) {
                     if (cityEditText.getText().length() > 0) {
-                        cityLatLng = MapnikGeocoder.getLocationFromAddress(this, cityEditText.toString().trim());
-                        if (cityLatLng != null) {
-                            confirmLocation.setColor(getResources().getColor(R.color.bright_green));
-                            locationText.setText(cityEditText.getText());
-                            game.setStartingLatLng(cityLatLng);
-                        } else {
-                            locationCityError();
-                        }
+                        MapnikGeocoder.getCityFromAddress(cityEditText.getText().toString().trim(), this);
                     } else {
                         locationCityError();
                     }
@@ -144,12 +137,29 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         }
     }
 
+    @Override
+    public void geocodingFinished(String strAddress, GameLocation gameLocation) {
+        super.geocodingFinished(strAddress, gameLocation);
+
+        if (gameLocation != null) {
+            confirmLocation.setColor(getResources().getColor(R.color.bright_green));
+            confirmLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_done));
+            locationText.setText(gameLocation.getName());
+            cityEditText.setText(gameLocation.getName());
+            game.setGameLocation(gameLocation);
+            setLocation(Game.LocationType.CITY);
+        } else {
+            locationCityError();
+        }
+    }
+
     private void locationCityError() {
         if (cityEditText != null) {
             YoYo.with(Techniques.Tada).duration(150).playOn(cityEditText);
             confirmLocation.setColor(getResources().getColor(R.color.red));
+            confirmLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_search));
             locationText.setText("");
-            game.setStartingLatLng(null);
+            game.setGameLocation(null);
         }
     }
 
@@ -194,16 +204,16 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         game.setTime(time);
     }
 
-    private void setLocation(Game.Location location) {
+    private void setLocation(Game.LocationType locationType) {
         locationCity.setColor(getResources().getColor(R.color.bright_green));
         locationMonuments.setColor(getResources().getColor(R.color.bright_green));
         locationCustom.setColor(getResources().getColor(R.color.bright_green));
         locationRandom.setColor(getResources().getColor(R.color.bright_green));
 
-        if (location == null) {
-            game.setLocation(null);
+        if (locationType == null) {
+            game.setGameLocation(null);
         } else {
-            switch (location) {
+            switch (locationType) {
                 case CITY:
                     locationCity.setColor(getResources().getColor(R.color.bright_purple));
                     break;
@@ -218,7 +228,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                     break;
             }
 
-            game.setLocation(location);
+            game.setLocationType(locationType);
         }
     }
 
@@ -230,10 +240,8 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         cityLatLng = null;
 
         cityEditText = (AppCompatEditText) locationCityDialog.findViewById(R.id.cityEditText);
-        checkForLatLng = (CircleButton) locationCityDialog.findViewById(R.id.checkForLatLng);
         confirmLocation = (CircleButton) locationCityDialog.findViewById(R.id.confirmLocation);
 
-        checkForLatLng.setOnClickListener(this);
         confirmLocation.setOnClickListener(this);
 
         locationCityDialog.show();

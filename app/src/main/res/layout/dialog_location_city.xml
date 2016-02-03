@@ -17,18 +17,7 @@
         android:singleLine="true" />
 
     <at.markushi.ui.CircleButton
-        android:src="@drawable/ic_location"
-        android:id="@+id/checkForLatLng"
-        app:cb_color="@color/bright_purple"
-        app:cb_pressedRingWidth="6dip"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_alignTop="@+id/confirmLocation"
-        android:layout_toLeftOf="@+id/confirmLocation"
-        android:layout_toStartOf="@+id/confirmLocation" />
-
-    <at.markushi.ui.CircleButton
-        android:src="@drawable/ic_action_done"
+        android:src="@drawable/ic_action_search"
         android:id="@+id/confirmLocation"
         app:cb_color="@color/red"
         app:cb_pressedRingWidth="6dip"

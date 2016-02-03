@@ -6,15 +6,17 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import cz.mapnik.app.interfaces.GeocoderCallbacks;
+import cz.mapnik.app.model.GameLocation;
+import cz.mapnik.app.utils.SmartLog;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by chaemil on 2.2.16.
  */
 
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity implements GeocoderCallbacks {
 
-    private static final int REQUEST_LOCATION_PERMISSION = 42;
     private View decorView;
 
     @Override
@@ -58,5 +60,11 @@ public class BaseActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN);
             }
         }
+    }
+
+    @Override
+    public void geocodingFinished(String strAddress, GameLocation gameLocation) {
+        SmartLog.Log(SmartLog.LogLevel.DEBUG, "strAddress", strAddress);
+        SmartLog.Log(SmartLog.LogLevel.DEBUG, "gameLocation.name", gameLocation.getName());
     }
 }
