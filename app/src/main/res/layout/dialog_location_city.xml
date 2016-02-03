@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="340dp"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <android.support.v7.widget.AppCompatEditText
         android:textSize="35dp"
@@ -15,6 +16,15 @@
         android:layout_alignParentLeft="true"
         android:gravity="center"
         android:singleLine="true" />
+
+    <ProgressBar
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:id="@+id/progress"
+        android:layout_width="84dp"
+        android:layout_height="84dp"
+        android:layout_below="@+id/cityEditText"
+        android:layout_centerHorizontal="true" />
 
     <at.markushi.ui.CircleButton
         android:src="@drawable/ic_action_search"

@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatEditText;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -42,6 +43,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
     private AppCompatEditText cityEditText;
     private CircleButton confirmLocation;
     private LatLng cityLatLng;
+    private ProgressBar geocoderProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +128,8 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
             case R.id.confirmLocation:
                 if (game.getGameLocation() == null) {
                     if (cityEditText.getText().length() > 0) {
+                        geocoderProgress.setVisibility(View.VISIBLE);
+                        cityEditText.setEnabled(false);
                         MapnikGeocoder.getCityFromAddress(cityEditText.getText().toString().trim(), this);
                     } else {
                         locationCityError();
@@ -146,11 +150,14 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
             confirmLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_done));
             locationText.setText(gameLocation.getName());
             cityEditText.setText(gameLocation.getName());
+            cityEditText.selectAll();
             game.setGameLocation(gameLocation);
             setLocation(Game.LocationType.CITY);
         } else {
             locationCityError();
         }
+        cityEditText.setEnabled(true);
+        geocoderProgress.setVisibility(View.GONE);
     }
 
     private void locationCityError() {
@@ -241,6 +248,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
 
         cityEditText = (AppCompatEditText) locationCityDialog.findViewById(R.id.cityEditText);
         confirmLocation = (CircleButton) locationCityDialog.findViewById(R.id.confirmLocation);
+        geocoderProgress = (ProgressBar) locationCityDialog.findViewById(R.id.progress);
 
         confirmLocation.setOnClickListener(this);
 
