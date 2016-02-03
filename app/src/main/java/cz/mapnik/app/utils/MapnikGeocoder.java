@@ -74,6 +74,7 @@ public class MapnikGeocoder {
                                 LatLng southWest = null;
 
                                 if (geometry.has("bounds")) {
+                                    SmartLog.Log(SmartLog.LogLevel.DEBUG, "hasBounds", String.valueOf(true));
                                     JsonObject northEastBounds = geometry.get("bounds").getAsJsonObject().get("northeast").getAsJsonObject();
                                     JsonObject southWestBounds = geometry.get("bounds").getAsJsonObject().get("southwest").getAsJsonObject();
 

@@ -7,7 +7,7 @@ public class Game {
 
     private Type type;
     private Time time;
-    private LocationType locationType;
+    private int locationType;
     private GameLocation gameLocation;
 
     public Game() {
@@ -21,7 +21,7 @@ public class Game {
         this.time = time;
     }
 
-    public void setLocationType(LocationType locationType) {
+    public void setLocationType(int locationType) {
         this.locationType = locationType;
     }
 
@@ -37,7 +37,7 @@ public class Game {
         return time;
     }
 
-    public LocationType getLocationType() {
+    public int getLocationType() {
         return locationType;
     }
 
@@ -45,15 +45,4 @@ public class Game {
         return gameLocation;
     }
 
-    public enum Type {
-        MAP, ADDRESS
-    }
-
-    public enum Time {
-        S30, M1, M3, M5
-    }
-
-    public enum LocationType {
-        CITY, MONUMENTS, CUSTOM, RANDOM
-    }
 }

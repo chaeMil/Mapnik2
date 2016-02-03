@@ -24,7 +24,10 @@ import cz.mapnik.app.Mapnik;
 import cz.mapnik.app.R;
 import cz.mapnik.app.model.Game;
 import cz.mapnik.app.model.GameLocation;
+import cz.mapnik.app.model.LocationType;
 import cz.mapnik.app.model.Player;
+import cz.mapnik.app.model.Time;
+import cz.mapnik.app.model.Type;
 import cz.mapnik.app.utils.MapnikGeocoder;
 
 /**
@@ -112,40 +115,40 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.typeAddress:
-                setType(Game.Type.ADDRESS);
+                setType(Type.ADDRESS);
                 break;
             case R.id.typeMap:
-                setType(Game.Type.MAP);
+                setType(Type.MAP);
                 break;
             case R.id.time_30sec:
-                setTime(Game.Time.S30);
+                setTime(Time.S30);
                 break;
             case R.id.time_1min:
-                setTime(Game.Time.M1);
+                setTime(Time.M1);
                 break;
             case R.id.time_3min:
-                setTime(Game.Time.M3);
+                setTime(Time.M3);
                 break;
             case R.id.time_5min:
-                setTime(Game.Time.M5);
+                setTime(Time.M5);
                 break;
             case R.id.location_cities:
-                setLocation(null);
+                setLocation(LocationType.NONE);
                 locationText.setText("");
-                game.setLocationType(null);
+                game.setLocationType(-1);
                 createLocationCityDialog();
                 break;
             case R.id.location_monuments:
-                setLocation(Game.LocationType.MONUMENTS);
+                setLocation(LocationType.MONUMENTS);
                 game.setGameLocation(new GameLocation(getString(R.string.monuments), new LatLng(0, 0)));
                 break;
             case R.id.location_custom:
                 Intent selectLocation = new Intent(this, MapSelectLocationActivity.class);
-                setLocation(Game.LocationType.CUSTOM);
+                setLocation(LocationType.CUSTOM);
                 startActivityForResult(selectLocation, MapSelectLocationActivity.SELECT_LOCATION);
                 break;
             case R.id.location_random:
-                setLocation(Game.LocationType.RANDOM);
+                setLocation(LocationType.RANDOM);
                 game.setGameLocation(new GameLocation(getString(R.string.random), new LatLng(0, 0)));
                 break;
             case R.id.confirmLocation:
@@ -178,7 +181,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                 if (game != null
                         &&game.getGameLocation() != null
                         && game.getType() != null
-                        && game.getLocationType() != null
+                        && game.getLocationType() != -1
                         && game.getTime() != null) {
 
                     Intent prepareGame = new Intent(this, PrepareGameActivity.class);
@@ -223,7 +226,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
 
             cityEditText.addTextChangedListener(cityEditTextWatcher);
             game.setGameLocation(gameLocation);
-            setLocation(Game.LocationType.CITY);
+            setLocation(LocationType.CITY);
         } else {
             locationCityError(true);
         }
@@ -238,7 +241,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case MapSelectLocationActivity.SELECT_LOCATION:
-                    setLocation(Game.LocationType.CUSTOM);
+                    setLocation(LocationType.CUSTOM);
                     GameLocation gameLocation = new GameLocation(getString(R.string.custom),
                             (LatLng) data.getParcelableExtra(MapSelectLocationActivity.LOCATION));
                     game.setGameLocation(gameLocation);
@@ -247,7 +250,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         } else {
             switch (requestCode) {
                 case MapSelectLocationActivity.SELECT_LOCATION:
-                    setLocation(null);
+                    setLocation(LocationType.NONE);
                     game.setGameLocation(null);
                     break;
             }
@@ -263,12 +266,12 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
             confirmLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_search));
             locationText.setText("");
             game.setGameLocation(null);
-            setLocation(null);
+            setLocation(LocationType.NONE);
         }
     }
 
 
-    private void setType(Game.Type type) {
+    private void setType(Type type) {
         typeMap.setColor(getResources().getColor(R.color.bright_green));
         typeAddress.setColor(getResources().getColor(R.color.bright_green));
 
@@ -284,7 +287,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         game.setType(type);
     }
 
-    private void setTime(Game.Time time) {
+    private void setTime(Time time) {
         time_30s.setColor(getResources().getColor(R.color.bright_green));
         time_1m.setColor(getResources().getColor(R.color.bright_green));
         time_3min.setColor(getResources().getColor(R.color.bright_green));
@@ -308,29 +311,29 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         game.setTime(time);
     }
 
-    private void setLocation(Game.LocationType locationType) {
+    private void setLocation(int locationType) {
         locationCity.setColor(getResources().getColor(R.color.bright_green));
         locationMonuments.setColor(getResources().getColor(R.color.bright_green));
         locationCustom.setColor(getResources().getColor(R.color.bright_green));
         locationRandom.setColor(getResources().getColor(R.color.bright_green));
 
-        if (locationType == null) {
+        if (locationType == LocationType.NONE) {
             game.setGameLocation(null);
             locationText.setText("");
         } else {
             switch (locationType) {
-                case CITY:
+                case LocationType.CITY:
                     locationCity.setColor(getResources().getColor(R.color.bright_purple));
                     break;
-                case MONUMENTS:
+                case LocationType.MONUMENTS:
                     locationMonuments.setColor(getResources().getColor(R.color.bright_purple));
                     locationText.setText(getString(R.string.monuments));
                     break;
-                case CUSTOM:
+                case LocationType.CUSTOM:
                     locationCustom.setColor(getResources().getColor(R.color.bright_purple));
                     locationText.setText(getString(R.string.custom));
                     break;
-                case RANDOM:
+                case LocationType.RANDOM:
                     locationRandom.setColor(getResources().getColor(R.color.bright_purple));
                     locationText.setText(getString(R.string.random));
                     break;
