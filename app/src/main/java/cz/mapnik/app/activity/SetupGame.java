@@ -117,6 +117,8 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                 break;
             case R.id.location_cities:
                 setLocation(null);
+                locationText.setText("");
+                game.setLocationType(null);
                 createLocationCityDialog();
                 break;
             case R.id.location_monuments:
@@ -131,6 +133,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
             case R.id.confirmLocation:
                 if (game.getGameLocation() == null) {
                     if (cityEditText.getText().length() > 0) {
+                        cityEditText.removeTextChangedListener(cityEditTextWatcher);
                         geocoderProgress.setVisibility(View.VISIBLE);
                         cityEditText.setEnabled(false);
                         MapnikGeocoder.getCityFromAddress(cityEditText.getText().toString().trim(), this);
@@ -144,6 +147,24 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         }
     }
 
+    TextWatcher cityEditTextWatcher = new TextWatcher() {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            locationCityError(false);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+
     @Override
     public void geocodingFinished(String strAddress, GameLocation gameLocation) {
         super.geocodingFinished(strAddress, gameLocation);
@@ -155,22 +176,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
             cityEditText.setText(gameLocation.getName());
             cityEditText.selectAll();
 
-            cityEditText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    locationCityError(false);
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-
-                }
-            });
+            cityEditText.addTextChangedListener(cityEditTextWatcher);
             game.setGameLocation(gameLocation);
             setLocation(Game.LocationType.CITY);
         } else {
