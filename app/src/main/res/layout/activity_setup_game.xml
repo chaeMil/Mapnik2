@@ -57,8 +57,8 @@
                 android:id="@+id/time_30sec"
                 app:cb_color="@color/bright_green"
                 app:cb_pressedRingWidth="8dip"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
                 android:layout_margin="4dp" />
 
             <at.markushi.ui.CircleButton
@@ -67,8 +67,8 @@
                 android:id="@+id/time_1min"
                 app:cb_color="@color/bright_green"
                 app:cb_pressedRingWidth="8dip"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
                 android:layout_margin="4dp" />
 
             <at.markushi.ui.CircleButton
@@ -77,8 +77,8 @@
                 android:id="@+id/time_3min"
                 app:cb_color="@color/bright_green"
                 app:cb_pressedRingWidth="8dip"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
                 android:layout_margin="4dp" />
 
             <at.markushi.ui.CircleButton
@@ -90,6 +90,55 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_margin="4dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center">
+
+            <at.markushi.ui.CircleButton
+                android:src="@drawable/ic_location_city"
+                android:id="@+id/location_cities"
+                app:cb_color="@color/bright_green"
+                app:cb_pressedRingWidth="8dip"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_margin="4dp" />
+
+            <at.markushi.ui.CircleButton
+
+                android:src="@drawable/ic_location_monuments"
+                android:id="@+id/location_monuments"
+                app:cb_color="@color/bright_green"
+                app:cb_pressedRingWidth="8dip"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_margin="4dp" />
+
+            <at.markushi.ui.CircleButton
+
+                android:src="@drawable/ic_location_custom"
+                android:id="@+id/location_custom"
+                app:cb_color="@color/bright_green"
+                app:cb_pressedRingWidth="8dip"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_margin="4dp" />
+
+            <at.markushi.ui.CircleButton
+
+                android:src="@drawable/ic_location_random"
+                android:id="@+id/location_random"
+                app:cb_color="@color/bright_green"
+                app:cb_pressedRingWidth="8dip"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_margin="4dp" />
+
         </LinearLayout>
 
         <RelativeLayout
