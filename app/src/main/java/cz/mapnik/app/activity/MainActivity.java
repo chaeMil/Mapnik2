@@ -6,6 +6,7 @@ import android.support.v7.widget.AppCompatEditText;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -16,6 +17,7 @@ import java.util.Map;
 import at.markushi.ui.CircleButton;
 import cz.mapnik.app.Mapnik;
 import cz.mapnik.app.R;
+import cz.mapnik.app.adapter.PlayersAdapter;
 import cz.mapnik.app.model.Player;
 import cz.mapnik.app.utils.SmartLog;
 
@@ -43,6 +45,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private AppCompatEditText playerNameEditText;
     private GridLayout avatars;
     private Dialog createPlayerDialog;
+    private ListView playersList;
+    private PlayersAdapter playersAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void setupUI() {
         playButton.setOnClickListener(this);
         closeButton.setOnClickListener(this);
+        playersAdapter = new PlayersAdapter(this, ((Mapnik) getApplication()).getPlayers());
     }
 
     @Override
@@ -109,9 +114,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 }
                 if (cont >= 2) {
                     addPlayer(new Player(playerNameEditText.getText().toString(), avatar));
+                    createPlayerDialog.dismiss();
+                    SmartLog.Log(SmartLog.LogLevel.DEBUG, "players", String.valueOf(((Mapnik) getApplication()).getPlayers().size()));
                 }
-                createPlayerDialog.dismiss();
-                SmartLog.Log(SmartLog.LogLevel.DEBUG, "players", String.valueOf(((Mapnik) getApplication()).getPlayers().size()));
                 break;
         }
     }
@@ -119,6 +124,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void addPlayer(Player player) {
 
         ((Mapnik) getApplication()).addPlayer(player);
+        playersAdapter.notifyDataSetChanged();
     }
 
     private void createPlayDialog() {
@@ -196,6 +202,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         dialog.setContentView(R.layout.players_dialog);
 
         addPlayerButton = (CircleButton) dialog.findViewById(R.id.addPlayerButton);
+        playersList = (ListView) dialog.findViewById(R.id.playersList);
+        playersList.setAdapter(playersAdapter);
 
         if (multiplayer) {
             addPlayerButton.setVisibility(View.VISIBLE);
