@@ -3,4 +3,7 @@
     <string name="already_exists">Already exists</string>
     <string name="prague">Prague...</string>
     <string name="cannot_access_location">:( cannot access locationType</string>
+    <string name="monuments">Monuments</string>
+    <string name="custom">Custom</string>
+    <string name="random">Random</string>
 </resources>

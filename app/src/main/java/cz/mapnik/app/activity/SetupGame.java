@@ -1,5 +1,6 @@
 package cz.mapnik.app.activity;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
     private LatLng cityLatLng;
     private ProgressBar geocoderProgress;
     private CircleButton previewLocation;
+    private CircleButton close;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +83,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         locationRandom = (CircleButton) findViewById(R.id.location_random);
         locationText = (TextView) findViewById(R.id.locationText);
         previewLocation = (CircleButton) findViewById(R.id.previewLocationButton);
+        close = (CircleButton) findViewById(R.id.closeButton);
     }
 
     private void setupUI() {
@@ -96,6 +99,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         locationRandom.setOnClickListener(this);
         locationText.setOnClickListener(this);
         previewLocation.setOnClickListener(this);
+        close.setOnClickListener(this);
     }
 
     @Override
@@ -129,7 +133,9 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                 setLocation(Game.LocationType.MONUMENTS);
                 break;
             case R.id.location_custom:
+                Intent selectLocation = new Intent(this, MapSelectLocationActivity.class);
                 setLocation(Game.LocationType.CUSTOM);
+                startActivityForResult(selectLocation, MapSelectLocationActivity.SELECT_LOCATION);
                 break;
             case R.id.location_random:
                 setLocation(Game.LocationType.RANDOM);
@@ -155,6 +161,12 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                     startActivity(previewMap);
                     overridePendingTransition(0 ,0);
                 }
+                break;
+            case R.id.closeButton:
+                finish();
+                overridePendingTransition(0 ,0);
+                break;
+
         }
     }
 
@@ -195,6 +207,29 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
         }
         cityEditText.setEnabled(true);
         geocoderProgress.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case MapSelectLocationActivity.SELECT_LOCATION:
+                    setLocation(Game.LocationType.CUSTOM);
+                    GameLocation gameLocation = new GameLocation(getString(R.string.custom),
+                            (LatLng) data.getParcelableExtra(MapSelectLocationActivity.LOCATION));
+                    game.setGameLocation(gameLocation);
+                    break;
+            }
+        } else {
+            switch (requestCode) {
+                case MapSelectLocationActivity.SELECT_LOCATION:
+                    setLocation(null);
+                    game.setGameLocation(null);
+                    break;
+            }
+        }
     }
 
     private void locationCityError(boolean animate) {
@@ -259,6 +294,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
 
         if (locationType == null) {
             game.setGameLocation(null);
+            locationText.setText("");
         } else {
             switch (locationType) {
                 case CITY:
@@ -266,12 +302,15 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                     break;
                 case MONUMENTS:
                     locationMonuments.setColor(getResources().getColor(R.color.bright_purple));
+                    locationText.setText(getString(R.string.monuments));
                     break;
                 case CUSTOM:
                     locationCustom.setColor(getResources().getColor(R.color.bright_purple));
+                    locationText.setText(getString(R.string.custom));
                     break;
                 case RANDOM:
                     locationRandom.setColor(getResources().getColor(R.color.bright_purple));
+                    locationText.setText(getString(R.string.random));
                     break;
             }
 

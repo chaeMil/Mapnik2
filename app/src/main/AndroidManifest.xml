@@ -50,6 +50,11 @@
             android:configChanges="keyboardHidden|screenSize|orientation">
 
         </activity>
+
+        <activity android:name=".activity.MapSelectLocationActivity"
+            android:configChanges="keyboardHidden|screenSize|orientation">
+
+        </activity>
     </application>
 
 </manifest>
