@@ -1,6 +1,5 @@
 package cz.mapnik.app.activity;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,8 +13,6 @@ import android.widget.ListView;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.koushikdutta.ion.Ion;
-
-import java.util.Map;
 
 import at.markushi.ui.CircleButton;
 import cz.mapnik.app.Mapnik;
