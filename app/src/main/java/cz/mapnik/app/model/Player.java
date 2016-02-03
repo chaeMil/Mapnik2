@@ -15,6 +15,16 @@ public class Player {
         this.score = 0;
     }
 
+    public boolean equals(Object other) {
+        if (other instanceof Player) {
+            if (((Player) other).getName().equals(this.name)
+                    && ((Player) other).getAvatar().equals(this.avatar)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setScore(int score) {
         this.score = score;
     }

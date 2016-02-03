@@ -28,9 +28,15 @@ public class Mapnik extends Application {
         players = new ArrayList<>();
     }
 
-    public void addPlayer(Player player, MainActivity caller) {
-        players.add(player);
-        caller.notifyPlayersChanged();
+    public boolean addPlayer(Player player, MainActivity caller) {
+        if (!players.contains(player)) {
+            players.add(player);
+            caller.notifyPlayersChanged();
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     public void removePlayer(Player player, MainActivity caller) {

@@ -26,7 +26,8 @@
         android:layout_gravity="center"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/avatar"
-        android:layout_toLeftOf="@+id/removePlayer" />
+        android:layout_toLeftOf="@+id/removePlayer"
+        android:singleLine="true" />
 
     <at.markushi.ui.CircleButton
         android:src="@drawable/ic_navigation_close"

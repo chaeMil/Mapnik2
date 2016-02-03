@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Mapnik</string>
+    <string name="already_exists">Already exists</string>
 </resources>

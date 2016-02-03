@@ -52,7 +52,7 @@
 
         <ImageView
             android:alpha="0.5"
-            android:tag="avatar_m_red"
+            android:tag="avatar_w_red"
             android:id="@+id/avatar_w_red"
             android:layout_width="70dp"
             android:layout_height="70dp"
@@ -60,7 +60,7 @@
 
         <ImageView
             android:alpha="0.5"
-            android:tag="avatar_m_green"
+            android:tag="avatar_w_green"
             android:id="@+id/avatar_w_green"
             android:layout_width="70dp"
             android:layout_height="70dp"

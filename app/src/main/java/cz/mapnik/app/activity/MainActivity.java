@@ -1,5 +1,6 @@
 package cz.mapnik.app.activity;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -125,12 +126,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     YoYo.with(Techniques.Pulse).duration(150).playOn(avatars);
                 }
                 if (cont >= 2) {
-                    addPlayer(new Player(playerNameEditText.getText().toString(), avatar));
-                    createPlayerDialog.dismiss();
-                    SmartLog.Log(SmartLog.LogLevel.DEBUG, "players", String.valueOf(((Mapnik) getApplication()).getPlayers().size()));
+                    boolean added = addPlayer(new Player(playerNameEditText.getText().toString(), avatar));
+                    if (added) {
+                        createPlayerDialog.dismiss();
+                        SmartLog.Log(SmartLog.LogLevel.DEBUG, "players", String.valueOf(((Mapnik) getApplication()).getPlayers().size()));
 
-                    if (startSinglePlayer) {
-                        startActivity(new Intent(this, SetupGame.class));
+                        if (startSinglePlayer) {
+                            startActivity(new Intent(this, SetupGame.class));
+                        }
+                    } else {
+                        notifyPlayerAlreadyExists();
                     }
                 }
                 break;
@@ -144,8 +149,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    private void addPlayer(Player player) {
-        ((Mapnik) getApplication()).addPlayer(player, this);
+    private boolean addPlayer(Player player) {
+        return ((Mapnik) getApplication()).addPlayer(player, this);
     }
 
     private void createPlayDialog() {
@@ -285,6 +290,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             } else {
                 noPlayers.setVisibility(View.VISIBLE);
             }
+        }
+    }
+
+    public void notifyPlayerAlreadyExists() {
+        if (playerNameEditText != null) {
+            playerNameEditText.setError(getString(R.string.already_exists));
+        }
+        if (avatars != null) {
+            YoYo.with(Techniques.Pulse).duration(150).playOn(avatars);
         }
     }
 }
