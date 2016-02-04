@@ -1,5 +1,6 @@
 package cz.mapnik.app.activity;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -55,6 +56,11 @@ public class PrepareGameActivity extends BaseActivity {
         super.gamePreparationFinished(guesses);
 
         Toast.makeText(this, "guesses found: " +guesses.size(), Toast.LENGTH_LONG).show();
+
+        Intent guessActivity = new Intent(this, GuessActivity.class);
+        guessActivity.putExtra(GuessActivity.GUESSES, guesses);
+        startActivity(guessActivity);
+        finish();
     }
 
     @Override
