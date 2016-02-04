@@ -2,6 +2,7 @@ package cz.mapnik.app.activity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -32,5 +33,7 @@ public class PrepareGameActivity extends BaseActivity {
     @Override
     public void gamePreparationFinished(ArrayList<Guess> guesses) {
         super.gamePreparationFinished(guesses);
+
+        Toast.makeText(this, "guesses found: " +guesses.size(), Toast.LENGTH_LONG).show();
     }
 }
