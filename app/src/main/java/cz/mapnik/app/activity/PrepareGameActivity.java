@@ -1,6 +1,5 @@
 package cz.mapnik.app.activity;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import java.util.ArrayList;
@@ -9,7 +8,7 @@ import cz.mapnik.app.Mapnik;
 import cz.mapnik.app.R;
 import cz.mapnik.app.model.Game;
 import cz.mapnik.app.model.Player;
-import cz.mapnik.app.service.PrepareGameAsync;
+import cz.mapnik.app.service.PrepareGame;
 
 /**
  * Created by chaemil on 3.2.16.
@@ -24,8 +23,8 @@ public class PrepareGameActivity extends BaseActivity {
         Game game = ((Mapnik) getApplication()).getCurrentGame();
         ArrayList<Player> players = ((Mapnik) getApplication()).getPlayers();
 
-        PrepareGameAsync prepareGameAsync = new PrepareGameAsync(game, players, this);
+        PrepareGame prepareGame = new PrepareGame(game, players, this);
 
-        prepareGameAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        prepareGame.prepareGame();
     }
 }

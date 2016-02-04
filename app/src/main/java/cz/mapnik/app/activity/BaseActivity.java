@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import java.util.ArrayList;
+
 import cz.mapnik.app.interfaces.GeocoderCallbacks;
 import cz.mapnik.app.model.GameLocation;
+import cz.mapnik.app.model.Guess;
 import cz.mapnik.app.utils.SmartLog;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -68,5 +71,9 @@ public class BaseActivity extends AppCompatActivity implements GeocoderCallbacks
         if (gameLocation != null) {
             SmartLog.Log(SmartLog.LogLevel.DEBUG, "gameLocation.name", gameLocation.getName());
         }
+    }
+
+    public void gamePreparationFinished(ArrayList<Guess> guesses) {
+        SmartLog.Log(SmartLog.LogLevel.DEBUG, "guesses.size()", String.valueOf(guesses.size()));
     }
 }

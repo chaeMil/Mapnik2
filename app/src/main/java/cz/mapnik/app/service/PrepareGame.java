@@ -1,16 +1,12 @@
 package cz.mapnik.app.service;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.concurrent.Future;
 
 import cz.mapnik.app.activity.BaseActivity;
 import cz.mapnik.app.model.Game;
@@ -23,12 +19,13 @@ import cz.mapnik.app.utils.SmartLog;
 /**
  * Created by chaemil on 3.2.16.
  */
-public class PrepareGameAsync extends AsyncTask {
+public class PrepareGame {
 
     private Game game;
     private ArrayList<Player> players;
     private BaseActivity caller;
     ArrayList<Guess> guesses = new ArrayList<>();
+    private int cycles = 0;
 
     private int ROUNDS = 5;
     private double MIN_LAT = -90;
@@ -36,14 +33,13 @@ public class PrepareGameAsync extends AsyncTask {
     private double MIN_LNG = -180;
     private double MAX_LNG = 180;
 
-    public PrepareGameAsync(Game game, ArrayList<Player> players, BaseActivity caller) {
+    public PrepareGame(Game game, ArrayList<Player> players, BaseActivity caller) {
         this.game = game;
         this.players = players;
         this.caller = caller;
     }
 
-    @Override
-    protected Object doInBackground(Object[] params) {
+    public void prepareGame() {
 
         double minLat = MIN_LAT;
         double maxLat = MAX_LAT;
@@ -68,16 +64,6 @@ public class PrepareGameAsync extends AsyncTask {
             checkForStreetView(caller, resultLat, resultLng);
 
         }
-
-
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(Object o) {
-        super.onPostExecute(o);
-
-        SmartLog.Log(SmartLog.LogLevel.DEBUG, "guesses", String.valueOf(guesses.size()));
     }
 
     private void addGuess() {
@@ -99,6 +85,12 @@ public class PrepareGameAsync extends AsyncTask {
                     @Override
                     public void onCompleted(Exception e, String result) {
                         if (result != null && errorString != null) {
+
+                            cycles += 1;
+
+                            if (cycles == ROUNDS * 5) {
+                                caller.gamePreparationFinished(guesses);
+                            }
 
                             SmartLog.Log(SmartLog.LogLevel.DEBUG, "link", baseLink + lat + "," + lng);
 
