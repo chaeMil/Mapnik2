@@ -80,12 +80,12 @@ public class MapnikGeocoder {
 
                                     northEast = new LatLng(northEastBounds.get("lat").getAsDouble(), northEastBounds.get("lng").getAsDouble());
                                     southWest = new LatLng(southWestBounds.get("lat").getAsDouble(), southWestBounds.get("lng").getAsDouble());
-                                }
 
-                                SmartLog.Log(SmartLog.LogLevel.DEBUG, "cityName", cityName);
+                                    SmartLog.Log(SmartLog.LogLevel.DEBUG, "northEast", northEast.toString());
 
-                                if (geometry.has("bounds")) {
                                     gameLocation = new GameLocation(cityName, centerLatLng, northEast, southWest);
+                                } else {
+                                    gameLocation = new GameLocation(cityName, centerLatLng);
                                 }
                             }
                         }

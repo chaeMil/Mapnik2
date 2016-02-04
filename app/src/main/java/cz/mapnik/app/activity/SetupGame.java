@@ -29,6 +29,7 @@ import cz.mapnik.app.model.Player;
 import cz.mapnik.app.model.Time;
 import cz.mapnik.app.model.Type;
 import cz.mapnik.app.utils.MapnikGeocoder;
+import cz.mapnik.app.utils.SmartLog;
 
 /**
  * Created by chaemil on 3.2.16.
@@ -183,6 +184,11 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                         && game.getType() != null
                         && game.getLocationType() != -1
                         && game.getTime() != null) {
+
+                    SmartLog.Log(SmartLog.LogLevel.DEBUG, "gameLocation", game.getGameLocation().getName());
+                    SmartLog.Log(SmartLog.LogLevel.DEBUG, "gameLocation", String.valueOf(game.getGameLocation().getNorthEastBound()));
+
+                    ((Mapnik) getApplication()).setCurrentGame(game);
 
                     Intent prepareGame = new Intent(this, PrepareGameActivity.class);
                     startActivity(prepareGame);
