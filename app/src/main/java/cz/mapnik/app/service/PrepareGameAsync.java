@@ -10,6 +10,7 @@ import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import cz.mapnik.app.activity.BaseActivity;
 import cz.mapnik.app.model.Game;
@@ -103,64 +104,6 @@ public class PrepareGameAsync extends AsyncTask{
         return null;
     }
 
-    private void addGuess(Guess guess) {
-        guesses.add(guess);
-    }
-
-    private Guess createGuess(double originLat, double originLng, double minLat,
-                              double maxLat, double minLng, double maxLng) {
-
-
-        String address = getAddress(originLat, originLng);
-        String fakeAddress1 = getFakeAddress(minLat, maxLat, minLng, maxLng);
-        String fakeAddress2 = getFakeAddress(minLat, maxLat, minLng, maxLng);
-
-        Guess guess = new Guess(address, new LatLng(originLat, originLng), fakeAddress1, fakeAddress2);
-
-        SmartLog.Log(SmartLog.LogLevel.DEBUG, "address", address + ", " + originLat + ", " + originLng);
-
-        return guess;
-
-    }
-
-    private Guess createGuess(double originLat, double originLng, int radius) {
-
-        List<Address> addresses = MapnikGeocoder.getAddressFromLatLng(caller, originLat, originLng, 1);
-        String address = addresses.get(0).getAddressLine(0);
-        String fakeAddress1 = getFakeAddress(originLat, originLng, radius);
-        String fakeAddress2 = getFakeAddress(originLat, originLng, radius);
-
-        Guess guess = new Guess(address, new LatLng(originLat, originLng), fakeAddress1, fakeAddress2);
-
-        SmartLog.Log(SmartLog.LogLevel.DEBUG, "address", address + ", " + originLat + ", " + originLng);
-
-        return guess;
-    }
-
-    private String getAddress (double lat, double lng) {
-
-        List<Address> addresses = MapnikGeocoder.getAddressFromLatLng(caller, lat, lng, 1);
-
-        return addresses.get(0).getAddressLine(0);
-    }
-
-    private String getFakeAddress(double minLat, double maxLat, double minLng, double maxLng) {
-
-        List<Address> fakeAddresses = MapnikGeocoder.getAddressFromLatLng(caller,
-                MathUtils.randomInRange(minLat, maxLat),
-                MathUtils.randomInRange(minLng, maxLng),
-                1);
-        return fakeAddresses.get(0).getAddressLine(0);
-
-    }
-
-    private String getFakeAddress(double originLat, double originLng, int radius) {
-
-        LatLng randomLocation = MapnikGeocoder.getRandomNearbyLocation(originLat, originLat, radius);
-
-        return getAddress(randomLocation.latitude, randomLocation.longitude);
-
-    }
 
     private void checkForStreetView(final Context context, final boolean boundsAvailable,
                                     final double lat, final double lng,
@@ -190,23 +133,29 @@ public class PrepareGameAsync extends AsyncTask{
                             } else {
                                 SmartLog.Log(SmartLog.LogLevel.DEBUG, "available", "true");
 
-                                Guess guess = null;
+                                CreateGuessAsync createGuessAsync;
 
-                                if (boundsAvailable) {
-                                    guess = createGuess(lat, lng, minLat, maxLat, minLng, maxLng);
-                                } else {
-                                    guess = createGuess(lat, lng, radius);
+                                cycles += 1;
+
+                                caller.increaseCurrentPreparationStep();
+
+                                boolean lastOne = false;
+
+                                if (cycles == ROUNDS * TRIES) {
+                                    lastOne = true;
                                 }
 
-                                addGuess(guess);
-                            }
+                                if (boundsAvailable) {
+                                    createGuessAsync = new CreateGuessAsync(PrepareGameAsync.this,
+                                            context, lat, lng, minLat, maxLat, minLng, maxLng, lastOne);
+                                } else {
+                                    createGuessAsync = new CreateGuessAsync(PrepareGameAsync.this,
+                                            context, lat, lng, radius, lastOne);
+                                }
 
-                            cycles += 1;
+                                createGuessAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-                            caller.increaseCurrentPreparationStep();
 
-                            if (cycles == ROUNDS * TRIES) {
-                                caller.gamePreparationFinished(guesses);
                             }
                         }
                     }
@@ -216,5 +165,15 @@ public class PrepareGameAsync extends AsyncTask{
             }
         });
 
+    }
+
+    public void addGuess(Guess guess) {
+        guesses.add(guess);
+    }
+
+    public void preparationFinished() {
+        if (cycles == ROUNDS * TRIES) {
+            caller.gamePreparationFinished(guesses);
+        }
     }
 }

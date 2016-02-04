@@ -1,6 +1,7 @@
 package cz.mapnik.app.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 
@@ -129,11 +130,17 @@ public class MapnikGeocoder {
         return new LatLng(foundLatitude, foundLongitude);
     }
 
-    public static List<Address> getAddressFromLatLng(Activity a, double lat, double lng,
+    public static List<Address> getAddressFromLatLng(Context context, double lat, double lng,
                                                      int numberOfLocations) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
         Geocoder geocoder;
         List<Address> addresses = null;
-        geocoder = new Geocoder(a, Locale.getDefault());
+        geocoder = new Geocoder(context, Locale.getDefault());
         try {
             addresses = geocoder.getFromLocation(lat,lng,numberOfLocations);
         } catch (IOException e) {
