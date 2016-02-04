@@ -76,4 +76,12 @@ public class BaseActivity extends AppCompatActivity implements GeocoderCallbacks
     public void gamePreparationFinished(ArrayList<Guess> guesses) {
         SmartLog.Log(SmartLog.LogLevel.DEBUG, "guesses.size()", String.valueOf(guesses.size()));
     }
+
+    public void setMaxPreparationSteps(int i) {
+        SmartLog.Log(SmartLog.LogLevel.DEBUG, "setMaxPreparationSteps", String.valueOf(i));
+    }
+
+    public void increaseCurrentPreparationStep() {
+
+    }
 }

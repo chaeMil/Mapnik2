@@ -14,6 +14,7 @@ import cz.mapnik.app.model.Game;
 import cz.mapnik.app.model.Guess;
 import cz.mapnik.app.model.LocationType;
 import cz.mapnik.app.model.Player;
+import cz.mapnik.app.utils.MapnikGeocoder;
 import cz.mapnik.app.utils.MathUtils;
 import cz.mapnik.app.utils.SmartLog;
 
@@ -27,8 +28,10 @@ public class PrepareGameAsync extends AsyncTask{
     private BaseActivity caller;
     ArrayList<Guess> guesses = new ArrayList<>();
     private int cycles = 0;
+    private boolean boundsAvailable = false;
 
     private int ROUNDS = 5;
+    private int TRIES = 5;
     private double MIN_LAT = -90;
     private double MAX_LAT = 90;
     private double MIN_LNG = -180;
@@ -41,6 +44,13 @@ public class PrepareGameAsync extends AsyncTask{
     }
 
     @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+
+        caller.setMaxPreparationSteps(ROUNDS * TRIES);
+    }
+
+    @Override
     protected Object doInBackground(Object[] params) {
 
         double minLat = MIN_LAT;
@@ -50,18 +60,38 @@ public class PrepareGameAsync extends AsyncTask{
 
         switch (game.getLocationType()) {
             case LocationType.CITY:
-                minLat = game.getGameLocation().getNorthEastBound().latitude;
-                maxLat = game.getGameLocation().getSouthWestBound().latitude;
-                minLng = game.getGameLocation().getNorthEastBound().longitude;
-                maxLng = game.getGameLocation().getSouthWestBound().longitude;
+
+                if (game.getGameLocation().getNorthEastBound() != null) {
+                    boundsAvailable = true;
+                    minLat = game.getGameLocation().getNorthEastBound().latitude;
+                    maxLat = game.getGameLocation().getSouthWestBound().latitude;
+                    minLng = game.getGameLocation().getNorthEastBound().longitude;
+                    maxLng = game.getGameLocation().getSouthWestBound().longitude;
+                }
                 break;
         }
 
 
-        for(int r = 0; r < ROUNDS * 5; r++) {
+        for(int r = 0; r < ROUNDS * TRIES; r++) {
 
-            double resultLat = MathUtils.randomInRange(minLat, maxLat);
-            double resultLng = MathUtils.randomInRange(minLng, maxLng);
+            double resultLat;
+            double resultLng;
+            if (boundsAvailable) {
+                resultLat = MathUtils.randomInRange(minLat, maxLat);
+                resultLng = MathUtils.randomInRange(minLng, maxLng);
+            } else {
+                LatLng noBoundsLocation = MapnikGeocoder.getRandomNearbyLocation(game.getGameLocation().getCenter().latitude,
+                        game.getGameLocation().getCenter().longitude,
+                        3000);
+                resultLat = noBoundsLocation.latitude;
+                resultLng = noBoundsLocation.longitude;
+            }
+
+            try {
+                Thread.sleep(1000); //1000 milliseconds is one second. To not spam Google APIs
+            } catch(InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
 
             checkForStreetView(caller, resultLat, resultLng);
 
@@ -85,6 +115,7 @@ public class PrepareGameAsync extends AsyncTask{
             @Override
             public void onCompleted(Exception e, final String errorString) {
 
+
                 Ion.with(context).load(baseLink + lat + "," + lng).asString().setCallback(new FutureCallback<String>() {
                     @Override
                     public void onCompleted(Exception e, String result) {
@@ -102,7 +133,9 @@ public class PrepareGameAsync extends AsyncTask{
 
                             cycles += 1;
 
-                            if (cycles == ROUNDS * 5) {
+                            caller.increaseCurrentPreparationStep();
+
+                            if (cycles == ROUNDS * TRIES) {
                                 caller.gamePreparationFinished(guesses);
                             }
                         }

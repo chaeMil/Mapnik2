@@ -10,6 +10,7 @@ import org.json.JSONArray;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Random;
 
 import cz.mapnik.app.activity.BaseActivity;
 import cz.mapnik.app.model.GameLocation;
@@ -97,6 +98,28 @@ public class MapnikGeocoder {
 
         });
 
+    }
+
+    public static LatLng getRandomNearbyLocation(double latitude, double longitude, int radius) {
+        Random random = new Random();
+
+        // Convert radius from meters to degrees
+        double radiusInDegrees = radius / 111000f;
+
+        double u = random.nextDouble();
+        double v = random.nextDouble();
+        double w = radiusInDegrees * Math.sqrt(u);
+        double t = 2 * Math.PI * v;
+        double x = w * Math.cos(t);
+        double y = w * Math.sin(t);
+
+        // Adjust the x-coordinate for the shrinking of the east-west distances
+        double new_x = x / Math.cos(latitude);
+
+        double foundLongitude = new_x + longitude;
+        double foundLatitude = y + latitude;
+
+        return new LatLng(foundLatitude, foundLongitude);
     }
 
 }

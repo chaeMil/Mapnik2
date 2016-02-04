@@ -2,8 +2,7 @@ package cz.mapnik.app.interfaces;
 
 import cz.mapnik.app.model.GameLocation;
 
-public abstract interface GeocoderCallbacks {
+public interface GeocoderCallbacks {
 
-    public abstract void geocodingFinished(String strAddress, GameLocation gameLocation);
-
+    void geocodingFinished(String strAddress, GameLocation gameLocation);
 }
