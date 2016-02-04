@@ -1,6 +1,7 @@
 package cz.mapnik.app.service;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.koushikdutta.async.future.FutureCallback;
@@ -19,7 +20,7 @@ import cz.mapnik.app.utils.SmartLog;
 /**
  * Created by chaemil on 3.2.16.
  */
-public class PrepareGame {
+public class PrepareGameAsync extends AsyncTask{
 
     private Game game;
     private ArrayList<Player> players;
@@ -33,13 +34,14 @@ public class PrepareGame {
     private double MIN_LNG = -180;
     private double MAX_LNG = 180;
 
-    public PrepareGame(Game game, ArrayList<Player> players, BaseActivity caller) {
+    public PrepareGameAsync(Game game, ArrayList<Player> players, BaseActivity caller) {
         this.game = game;
         this.players = players;
         this.caller = caller;
     }
 
-    public void prepareGame() {
+    @Override
+    protected Object doInBackground(Object[] params) {
 
         double minLat = MIN_LAT;
         double maxLat = MAX_LAT;
@@ -64,6 +66,8 @@ public class PrepareGame {
             checkForStreetView(caller, resultLat, resultLng);
 
         }
+
+        return null;
     }
 
     private void addGuess() {
@@ -86,12 +90,6 @@ public class PrepareGame {
                     public void onCompleted(Exception e, String result) {
                         if (result != null && errorString != null) {
 
-                            cycles += 1;
-
-                            if (cycles == ROUNDS * 5) {
-                                caller.gamePreparationFinished(guesses);
-                            }
-
                             SmartLog.Log(SmartLog.LogLevel.DEBUG, "link", baseLink + lat + "," + lng);
 
                             if (errorString.equals(result)) {
@@ -100,6 +98,12 @@ public class PrepareGame {
                             } else {
                                 SmartLog.Log(SmartLog.LogLevel.DEBUG, "available", "true");
                                 addGuess();
+                            }
+
+                            cycles += 1;
+
+                            if (cycles == ROUNDS * 5) {
+                                caller.gamePreparationFinished(guesses);
                             }
                         }
                     }
@@ -110,5 +114,4 @@ public class PrepareGame {
         });
 
     }
-
 }
