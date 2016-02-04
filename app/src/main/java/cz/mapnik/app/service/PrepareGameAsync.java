@@ -69,12 +69,16 @@ public class PrepareGameAsync extends AsyncTask {
 
         }
 
-        SmartLog.Log(SmartLog.LogLevel.DEBUG, "guesses", String.valueOf(guesses.size()));
-
 
         return null;
     }
 
+    @Override
+    protected void onPostExecute(Object o) {
+        super.onPostExecute(o);
+
+        SmartLog.Log(SmartLog.LogLevel.DEBUG, "guesses", String.valueOf(guesses.size()));
+    }
 
     private void addGuess() {
         guesses.add(new Guess("test",new LatLng(0.0, 0.0), "fake1", "fake2"));
