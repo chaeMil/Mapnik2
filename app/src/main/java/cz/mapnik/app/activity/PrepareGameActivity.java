@@ -32,11 +32,10 @@ public class PrepareGameActivity extends BaseActivity {
         setContentView(R.layout.activity_prepare_game);
 
         Game game = ((Mapnik) getApplication()).getCurrentGame();
-        ArrayList<Player> players = ((Mapnik) getApplication()).getPlayers();
 
         getUI();
 
-        prepareGame = new PrepareGameAsync(game, players, this);
+        prepareGame = new PrepareGameAsync(game, this);
         prepareGame.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 

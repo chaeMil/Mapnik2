@@ -28,7 +28,6 @@ public class PrepareGameAsync extends AsyncTask{
 
     private static final int DEFAULT_GUESS_RADIUS = 800;
     private Game game;
-    private ArrayList<Player> players;
     private BaseActivity caller;
     ArrayList<Guess> guesses = new ArrayList<>();
     private int cycles = 0;
@@ -41,9 +40,8 @@ public class PrepareGameAsync extends AsyncTask{
     private double MIN_LNG = -180;
     private double MAX_LNG = 180;
 
-    public PrepareGameAsync(Game game, ArrayList<Player> players, BaseActivity caller) {
+    public PrepareGameAsync(Game game, BaseActivity caller) {
         this.game = game;
-        this.players = players;
         this.caller = caller;
     }
 
