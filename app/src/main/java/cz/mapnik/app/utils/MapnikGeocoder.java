@@ -1,5 +1,9 @@
 package cz.mapnik.app.utils;
 
+import android.app.Activity;
+import android.location.Address;
+import android.location.Geocoder;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -8,8 +12,11 @@ import com.koushikdutta.ion.Ion;
 
 import org.json.JSONArray;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import cz.mapnik.app.activity.BaseActivity;
@@ -120,6 +127,19 @@ public class MapnikGeocoder {
         double foundLatitude = y + latitude;
 
         return new LatLng(foundLatitude, foundLongitude);
+    }
+
+    public static List<Address> getAddressFromLatLng(Activity a, double lat, double lng,
+                                                     int numberOfLocations) {
+        Geocoder geocoder;
+        List<Address> addresses = null;
+        geocoder = new Geocoder(a, Locale.getDefault());
+        try {
+            addresses = geocoder.getFromLocation(lat,lng,numberOfLocations);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return addresses;
     }
 
 }

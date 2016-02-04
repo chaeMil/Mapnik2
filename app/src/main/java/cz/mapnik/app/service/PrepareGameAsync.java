@@ -1,6 +1,7 @@
 package cz.mapnik.app.service;
 
 import android.content.Context;
+import android.location.Address;
 import android.os.AsyncTask;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -8,6 +9,7 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cz.mapnik.app.activity.BaseActivity;
 import cz.mapnik.app.model.Game;
@@ -23,6 +25,7 @@ import cz.mapnik.app.utils.SmartLog;
  */
 public class PrepareGameAsync extends AsyncTask{
 
+    private static final int DEFAULT_GUESS_RADIUS = 800;
     private Game game;
     private ArrayList<Player> players;
     private BaseActivity caller;
@@ -93,18 +96,76 @@ public class PrepareGameAsync extends AsyncTask{
                 Thread.currentThread().interrupt();
             }
 
-            checkForStreetView(caller, resultLat, resultLng);
+            checkForStreetView(caller, boundsAvailable, resultLat, resultLng, minLat, maxLat, minLng, maxLng, DEFAULT_GUESS_RADIUS);
 
         }
 
         return null;
     }
 
-    private void addGuess() {
-        guesses.add(new Guess("test",new LatLng(0.0, 0.0), "fake1", "fake2"));
+    private void addGuess(Guess guess) {
+        guesses.add(guess);
     }
 
-    private void checkForStreetView(final Context context, final double lat, final double lng) {
+    private Guess createGuess(double originLat, double originLng, double minLat,
+                              double maxLat, double minLng, double maxLng) {
+
+
+        String address = getAddress(originLat, originLng);
+        String fakeAddress1 = getFakeAddress(minLat, maxLat, minLng, maxLng);
+        String fakeAddress2 = getFakeAddress(minLat, maxLat, minLng, maxLng);
+
+        Guess guess = new Guess(address, new LatLng(originLat, originLng), fakeAddress1, fakeAddress2);
+
+        SmartLog.Log(SmartLog.LogLevel.DEBUG, "address", address + ", " + originLat + ", " + originLng);
+
+        return guess;
+
+    }
+
+    private Guess createGuess(double originLat, double originLng, int radius) {
+
+        List<Address> addresses = MapnikGeocoder.getAddressFromLatLng(caller, originLat, originLng, 1);
+        String address = addresses.get(0).getAddressLine(0);
+        String fakeAddress1 = getFakeAddress(originLat, originLng, radius);
+        String fakeAddress2 = getFakeAddress(originLat, originLng, radius);
+
+        Guess guess = new Guess(address, new LatLng(originLat, originLng), fakeAddress1, fakeAddress2);
+
+        SmartLog.Log(SmartLog.LogLevel.DEBUG, "address", address + ", " + originLat + ", " + originLng);
+
+        return guess;
+    }
+
+    private String getAddress (double lat, double lng) {
+
+        List<Address> addresses = MapnikGeocoder.getAddressFromLatLng(caller, lat, lng, 1);
+
+        return addresses.get(0).getAddressLine(0);
+    }
+
+    private String getFakeAddress(double minLat, double maxLat, double minLng, double maxLng) {
+
+        List<Address> fakeAddresses = MapnikGeocoder.getAddressFromLatLng(caller,
+                MathUtils.randomInRange(minLat, maxLat),
+                MathUtils.randomInRange(minLng, maxLng),
+                1);
+        return fakeAddresses.get(0).getAddressLine(0);
+
+    }
+
+    private String getFakeAddress(double originLat, double originLng, int radius) {
+
+        LatLng randomLocation = MapnikGeocoder.getRandomNearbyLocation(originLat, originLat, radius);
+
+        return getAddress(randomLocation.latitude, randomLocation.longitude);
+
+    }
+
+    private void checkForStreetView(final Context context, final boolean boundsAvailable,
+                                    final double lat, final double lng,
+                                    final double minLat, final double maxLat, final double minLng, final double maxLng,
+                                    final int radius) {
 
         final String errorLink = "http://maps.googleapis.com/maps/api/streetview?size=400x400&location=34.834806,-41.314475";
         final String baseLink = "http://maps.googleapis.com/maps/api/streetview?size=400x400&sensor=true&location=";
@@ -128,7 +189,16 @@ public class PrepareGameAsync extends AsyncTask{
 
                             } else {
                                 SmartLog.Log(SmartLog.LogLevel.DEBUG, "available", "true");
-                                addGuess();
+
+                                Guess guess = null;
+
+                                if (boundsAvailable) {
+                                    guess = createGuess(lat, lng, minLat, maxLat, minLng, maxLng);
+                                } else {
+                                    guess = createGuess(lat, lng, radius);
+                                }
+
+                                addGuess(guess);
                             }
 
                             cycles += 1;
