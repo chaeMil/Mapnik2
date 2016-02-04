@@ -1,5 +1,7 @@
 package cz.mapnik.app.model;
 
+import java.util.ArrayList;
+
 /**
  * Created by chaemil on 3.2.16.
  */
@@ -9,8 +11,17 @@ public class Game {
     private Time time;
     private int locationType;
     private GameLocation gameLocation;
+    private ArrayList<Guess> guesses;
 
     public Game() {
+    }
+
+    public ArrayList<Guess> getGuesses() {
+        return guesses;
+    }
+
+    public void setGuesses(ArrayList<Guess> guesses) {
+        this.guesses = guesses;
     }
 
     public void setType(Type type) {

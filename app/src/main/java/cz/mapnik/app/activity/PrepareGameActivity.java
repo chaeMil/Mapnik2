@@ -57,8 +57,9 @@ public class PrepareGameActivity extends BaseActivity {
 
         Toast.makeText(this, "guesses found: " +guesses.size(), Toast.LENGTH_LONG).show();
 
+        ((Mapnik) getApplication()).getCurrentGame().setGuesses(guesses);
+
         Intent guessActivity = new Intent(this, GuessActivity.class);
-        guessActivity.putExtra(GuessActivity.GUESSES, guesses);
         startActivity(guessActivity);
         finish();
     }

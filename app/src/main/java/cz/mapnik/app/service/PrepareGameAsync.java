@@ -1,7 +1,6 @@
 package cz.mapnik.app.service;
 
 import android.content.Context;
-import android.location.Address;
 import android.os.AsyncTask;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -9,14 +8,11 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executor;
 
 import cz.mapnik.app.activity.BaseActivity;
 import cz.mapnik.app.model.Game;
 import cz.mapnik.app.model.Guess;
 import cz.mapnik.app.model.LocationType;
-import cz.mapnik.app.model.Player;
 import cz.mapnik.app.utils.MapnikGeocoder;
 import cz.mapnik.app.utils.MathUtils;
 import cz.mapnik.app.utils.SmartLog;
@@ -34,7 +30,7 @@ public class PrepareGameAsync extends AsyncTask{
     private boolean boundsAvailable = false;
 
     private int ROUNDS = 5;
-    private int TRIES = 5;
+    private int TRIES = 3;
     private double MIN_LAT = -90;
     private double MAX_LAT = 90;
     private double MIN_LNG = -180;
