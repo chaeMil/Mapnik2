@@ -26,7 +26,7 @@ public class PrepareGameAsync extends AsyncTask{
     public static final String ERROR_LINK = "http://maps.googleapis.com/maps/api/streetview?size=400x400&location=34.834806,-41.314475";
     public static final int DEFAULT_GUESS_RADIUS = 800;
     public static final int ROUNDS = 5;
-    public static final int TRIES = 3;
+    public static final int TRIES = 5;
     public static final int MIN_VALID_GUESSES = 5;
     public static final double MIN_LAT = -90;
     public static final double MAX_LAT = 90;
@@ -66,6 +66,13 @@ public class PrepareGameAsync extends AsyncTask{
 
     @Override
     protected Object doInBackground(Object[] params) {
+
+        doTheWork();
+
+        return null;
+    }
+
+    private void doTheWork() {
 
         double minLat = MIN_LAT;
         double maxLat = MAX_LAT;
@@ -111,7 +118,6 @@ public class PrepareGameAsync extends AsyncTask{
 
         }
 
-        return null;
     }
 
 
