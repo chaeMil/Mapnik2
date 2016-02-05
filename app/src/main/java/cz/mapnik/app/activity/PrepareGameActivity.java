@@ -99,29 +99,7 @@ public class PrepareGameActivity extends BaseActivity {
     }
 
     @Override
-    public void increaseCurrentPreparationStep(int validGuesses) {
-        this.currentPreparationStep += 1;
-
-        switch (validGuesses) {
-            case 0:
-                loading.setColor(getResources().getColor(R.color.brown));
-                break;
-            case 1:
-                loading.setColor(getResources().getColor(R.color.red));
-                break;
-            case 2:
-                loading.setColor(getResources().getColor(R.color.orange));
-                break;
-            case 3:
-                loading.setColor(getResources().getColor(R.color.yellow));
-                break;
-            case 4:
-                loading.setColor(getResources().getColor(R.color.yellow_green));
-                break;
-            case 5:
-                loading.setColor(getResources().getColor(R.color.bright_green));
-                break;
-        }
+    public void increaseCurrentPreparationStep() {
 
         double progress = (double) currentPreparationStep / (double) maxPreparationSteps * 100.0;
 

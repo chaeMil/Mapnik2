@@ -137,7 +137,7 @@ public class PrepareGameAsync extends AsyncTask{
 
                     cycles += 1;
 
-                    caller.increaseCurrentPreparationStep(guesses.size());
+                    caller.increaseCurrentPreparationStep();
 
                     SmartLog.Log(SmartLog.LogLevel.DEBUG, "cycles", String.valueOf(cycles));
 
