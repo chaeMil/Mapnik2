@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Mapnik</string>
+    <string name="api_key">AIzaSyDBe0Ev3aL5Rotr6jkwv_e7Xzv_vtTgNBE</string>
     <string name="already_exists">Already exists</string>
     <string name="prague">Prague...</string>
     <string name="cannot_access_location">:( cannot access locationType</string>

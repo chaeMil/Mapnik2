@@ -29,7 +29,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDBe0Ev3aL5Rotr6jkwv_e7Xzv_vtTgNBE"/>
+            android:value="@string/api_key"/>
 
         <activity android:name=".activity.MainActivity"
             android:configChanges="keyboardHidden|screenSize|orientation">
