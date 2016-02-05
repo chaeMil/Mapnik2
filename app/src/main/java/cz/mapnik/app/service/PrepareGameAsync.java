@@ -127,6 +127,8 @@ public class PrepareGameAsync extends AsyncTask{
 
         final String baseLink = "http://maps.googleapis.com/maps/api/streetview?size=400x400&sensor=true&location=" + lat + "," + lng + "&key=" + apiKey;
 
+        SmartLog.Log(SmartLog.LogLevel.DEBUG, "GoogleMapsDebugLink: ", "https://www.google.cz/maps/@" + lat + "," + lng + ",15z");
+
         Ion.with(context).load(baseLink).asString().setCallback(new FutureCallback<String>() {
             @Override
             public void onCompleted(Exception e, String result) {
