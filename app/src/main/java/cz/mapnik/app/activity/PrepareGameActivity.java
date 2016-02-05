@@ -100,6 +100,7 @@ public class PrepareGameActivity extends BaseActivity {
 
     @Override
     public void increaseCurrentPreparationStep() {
+        this.currentPreparationStep += 1;
 
         double progress = (double) currentPreparationStep / (double) maxPreparationSteps * 100.0;
 
