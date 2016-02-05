@@ -1,8 +1,11 @@
 package cz.mapnik.app.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
@@ -32,6 +35,8 @@ public class PrepareGameActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prepare_game);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         Game game = ((Mapnik) getApplication()).getCurrentGame();
 
         getUI();
@@ -55,13 +60,37 @@ public class PrepareGameActivity extends BaseActivity {
     public void gamePreparationFinished(ArrayList<Guess> guesses) {
         super.gamePreparationFinished(guesses);
 
-        Toast.makeText(this, "guesses found: " +guesses.size(), Toast.LENGTH_LONG).show();
+        if (guesses.size() < PrepareGameAsync.MIN_VALID_GUESSES) {
+            createRetryDialog();
+        } else {
+            ((Mapnik) getApplication()).getCurrentGame().setGuesses(guesses);
 
-        ((Mapnik) getApplication()).getCurrentGame().setGuesses(guesses);
+            Intent guessActivity = new Intent(this, GuessActivity.class);
+            startActivity(guessActivity);
+            finish();
+        }
+    }
 
-        Intent guessActivity = new Intent(this, GuessActivity.class);
-        startActivity(guessActivity);
-        finish();
+    private void createRetryDialog() {
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setMessage(getString(R.string.retry_game_preparation));
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.no),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.yes),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent prepareGame = new Intent(PrepareGameActivity.this, PrepareGameActivity.class);
+                        startActivity(prepareGame);
+                        finish();
+                    }
+                });
+        alertDialog.show();
     }
 
     @Override
@@ -70,9 +99,29 @@ public class PrepareGameActivity extends BaseActivity {
     }
 
     @Override
-    public void increaseCurrentPreparationStep() {
-        super.increaseCurrentPreparationStep();
+    public void increaseCurrentPreparationStep(int validGuesses) {
         this.currentPreparationStep += 1;
+
+        switch (validGuesses) {
+            case 0:
+                loading.setColor(getResources().getColor(R.color.brown));
+                break;
+            case 1:
+                loading.setColor(getResources().getColor(R.color.red));
+                break;
+            case 2:
+                loading.setColor(getResources().getColor(R.color.orange));
+                break;
+            case 3:
+                loading.setColor(getResources().getColor(R.color.yellow));
+                break;
+            case 4:
+                loading.setColor(getResources().getColor(R.color.yellow_green));
+                break;
+            case 5:
+                loading.setColor(getResources().getColor(R.color.bright_green));
+                break;
+        }
 
         double progress = (double) currentPreparationStep / (double) maxPreparationSteps * 100.0;
 

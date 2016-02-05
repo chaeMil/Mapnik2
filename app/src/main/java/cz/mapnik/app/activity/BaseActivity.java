@@ -81,7 +81,7 @@ public class BaseActivity extends AppCompatActivity implements GeocoderCallbacks
         SmartLog.Log(SmartLog.LogLevel.DEBUG, "setMaxPreparationSteps", String.valueOf(i));
     }
 
-    public void increaseCurrentPreparationStep() {
+    public void increaseCurrentPreparationStep(int validGuesses) {
 
     }
 }

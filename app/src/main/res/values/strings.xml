@@ -7,4 +7,7 @@
     <string name="monuments">Monuments</string>
     <string name="custom">Custom</string>
     <string name="random">Random</string>
+    <string name="retry_game_preparation">Game preparation failed. Retry?</string>
+    <string name="no">no</string>
+    <string name="yes">Yes</string>
 </resources>

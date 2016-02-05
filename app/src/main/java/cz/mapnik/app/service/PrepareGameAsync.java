@@ -137,7 +137,7 @@ public class PrepareGameAsync extends AsyncTask{
 
                     cycles += 1;
 
-                    caller.increaseCurrentPreparationStep();
+                    caller.increaseCurrentPreparationStep(guesses.size());
 
                     SmartLog.Log(SmartLog.LogLevel.DEBUG, "cycles", String.valueOf(cycles));
 
@@ -189,8 +189,8 @@ public class PrepareGameAsync extends AsyncTask{
             }
         }
 
-        if (guesses.size() >= MIN_VALID_GUESSES) {
-            caller.gamePreparationFinished(guesses);
-        }
+        SmartLog.Log(SmartLog.LogLevel.DEBUG, "finalGuessesCount", String.valueOf(guesses.size()));
+
+        caller.gamePreparationFinished(guesses);
     }
 }
