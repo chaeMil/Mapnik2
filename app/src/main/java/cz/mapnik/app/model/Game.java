@@ -10,6 +10,7 @@ public class Game {
     private Type type;
     private Time time;
     private int locationType;
+    private int radius;
     private GameLocation gameLocation;
     private ArrayList<Guess> guesses;
 
@@ -18,6 +19,14 @@ public class Game {
 
     public ArrayList<Guess> getGuesses() {
         return guesses;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 
     public void setGuesses(ArrayList<Guess> guesses) {

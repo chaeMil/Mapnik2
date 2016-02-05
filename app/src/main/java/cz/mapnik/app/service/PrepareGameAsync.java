@@ -24,7 +24,6 @@ import cz.mapnik.app.utils.SmartLog;
 public class PrepareGameAsync extends AsyncTask{
 
     public static final String ERROR_LINK = "http://maps.googleapis.com/maps/api/streetview?size=400x400&location=34.834806,-41.314475";
-    public static final int DEFAULT_GUESS_RADIUS = 800;
     public static final int ROUNDS = 5;
     public static final int TRIES = 5;
     public static final int MIN_VALID_GUESSES = 5;
@@ -114,7 +113,7 @@ public class PrepareGameAsync extends AsyncTask{
                 Thread.currentThread().interrupt();
             }
 
-            checkForStreetView(caller, boundsAvailable, resultLat, resultLng, minLat, maxLat, minLng, maxLng, DEFAULT_GUESS_RADIUS);
+            checkForStreetView(caller, boundsAvailable, resultLat, resultLng, minLat, maxLat, minLng, maxLng, game.getRadius());
 
         }
 

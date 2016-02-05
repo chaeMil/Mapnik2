@@ -250,7 +250,9 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                     setLocation(LocationType.CUSTOM);
                     GameLocation gameLocation = new GameLocation(getString(R.string.custom),
                             (LatLng) data.getParcelableExtra(MapSelectLocationActivity.LOCATION));
+                    int radius = data.getIntExtra(MapSelectLocationActivity.RADIUS, MapSelectLocationActivity.DEFAULT_RADIUS);
                     game.setGameLocation(gameLocation);
+                    game.setRadius(radius);
                     break;
             }
         } else {
@@ -258,6 +260,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                 case MapSelectLocationActivity.SELECT_LOCATION:
                     setLocation(LocationType.NONE);
                     game.setGameLocation(null);
+                    game.setRadius(0);
                     break;
             }
         }

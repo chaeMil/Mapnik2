@@ -33,6 +33,7 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
     public static final int MAX_RADIUS = 100 * 1000;
     public static final String LOCATION = "location";
     public static final int SELECT_LOCATION = 5;
+    public static final String RADIUS = "radius";
     private MapFragment mapFragment;
     private GoogleMap map;
     private CircleButton confirm;
@@ -114,6 +115,7 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
                 if (customLocation != null) {
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra(LOCATION, customLocation);
+                    returnIntent.putExtra(RADIUS, radius);
                     setResult(Activity.RESULT_OK, returnIntent);
                     finish();
                 } else {
