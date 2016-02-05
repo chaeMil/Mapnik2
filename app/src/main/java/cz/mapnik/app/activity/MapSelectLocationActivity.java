@@ -12,11 +12,15 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import at.markushi.ui.CircleButton;
 import cz.mapnik.app.R;
+import cz.mapnik.app.utils.MapUtils;
 
 /**
  * Created by chaemil on 3.2.16.
@@ -24,6 +28,9 @@ import cz.mapnik.app.R;
 
 public class MapSelectLocationActivity extends BaseActivity implements OnMapReadyCallback, View.OnClickListener {
 
+    public static final int DEFAULT_RADIUS = 3000;
+    public static final int MIN_RADIUS = 500;
+    public static final int MAX_RADIUS = 100 * 1000;
     public static final String LOCATION = "location";
     public static final int SELECT_LOCATION = 5;
     private MapFragment mapFragment;
@@ -31,11 +38,16 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
     private CircleButton confirm;
     private LatLng customLocation;
     private CircleButton cancel;
+    private int radius;
+    private CircleButton expandButton;
+    private CircleButton shrinkButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_select_location);
+
+        radius = DEFAULT_RADIUS;
 
         getUI();
 
@@ -49,11 +61,50 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
         map = mapFragment.getMap();
         confirm = (CircleButton) findViewById(R.id.confirm);
         cancel = (CircleButton) findViewById(R.id.closeButton);
+        expandButton = (CircleButton) findViewById(R.id.expandButton);
+        shrinkButton = (CircleButton) findViewById(R.id.shrinkButton);
     }
 
     private void setupUI() {
         confirm.setOnClickListener(this);
         cancel.setOnClickListener(this);
+        expandButton.setOnClickListener(this);
+        shrinkButton.setOnClickListener(this);
+    }
+
+    private void shrink() {
+        if (customLocation != null) {
+            if (radius >= MIN_RADIUS) {
+                radius = radius / 2;
+            }
+            map.clear();
+            addCircle();
+        }
+    }
+
+    private void expand() {
+        if (customLocation != null) {
+            if (radius <= MAX_RADIUS) {
+                radius = radius * 2;
+            }
+            map.clear();
+            addCircle();
+        }
+    }
+
+    private void addCircle() {
+        Circle circle = map.addCircle(new CircleOptions()
+                .center(customLocation)
+                .radius(radius)
+                .fillColor(getResources().getColor(R.color.bright_green_alpha))
+                .strokeColor(getResources().getColor(R.color.bright_green))
+                .strokeWidth(5));
+
+        double radius = circle.getRadius();
+
+        LatLngBounds bounds = MapUtils.convertCenterAndRadiusToBounds(customLocation, radius);
+
+        map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200));
     }
 
     @Override
@@ -73,6 +124,12 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
             case R.id.closeButton:
                 setResult(Activity.RESULT_CANCELED);
                 finish();
+                break;
+            case R.id.expandButton:
+                expand();
+                break;
+            case R.id.shrinkButton:
+                shrink();
                 break;
         }
     }
@@ -95,14 +152,23 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
                         customLocation = latLng;
 
                         map.clear();
-                        map.addMarker(new MarkerOptions()
-                                .position(latLng));
+                        addCircle();
 
                         if (confirm.getVisibility() != View.VISIBLE) {
                             confirm.setVisibility(View.VISIBLE);
-                            YoYo.with(Techniques.SlideInUp)
-                                    .duration(400)
+                            shrinkButton.setVisibility(View.VISIBLE);
+                            expandButton.setVisibility(View.VISIBLE);
+
+                            YoYo.with(Techniques.BounceInUp)
+                                    .duration(250)
                                     .playOn(confirm);
+                            YoYo.with(Techniques.BounceInUp)
+                                    .duration(250)
+                                    .playOn(shrinkButton);
+                            YoYo.with(Techniques.BounceInUp)
+                                    .duration(250)
+                                    .playOn(expandButton);
+
                         }
                     }
                 });
