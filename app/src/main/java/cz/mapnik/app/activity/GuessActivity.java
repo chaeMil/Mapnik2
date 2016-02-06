@@ -175,8 +175,15 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
             timer.cancel();
         }
 
-        hideWrapperViews();
-        nextPlayerWrapper.setVisibility(View.VISIBLE);
+        if (players.size() > 1) {
+            hideWrapperViews();
+            nextPlayerWrapper.setVisibility(View.VISIBLE);
+        } else {
+            hideWrapperViews();
+            currentTurnWrapper.setVisibility(View.VISIBLE);
+            prepareTurn();
+            startTurn();
+        }
         int avatarRes = getResources().getIdentifier(player.getAvatar(), "drawable", getPackageName());
         nextPlayerAvatar.setImageDrawable(getResources().getDrawable(avatarRes));
         nextPlayerNick.setText(player.getName());
@@ -382,7 +389,9 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 if (currentTurn <= maxTurns) {
 
                     nextPlayer();
-                    prepareTurn();
+                    if (players.size() > 1 ) {
+                        prepareTurn();
+                    }
 
                 }
                 break;
