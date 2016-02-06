@@ -155,6 +155,9 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         currentPlayer = -1;
         currentTurn += 1;
         turnGuesses.add(currentTurn, new ArrayList());
+        if (timer != null) {
+            timer.cancel();
+        }
 
         hideWrapperViews();
 
@@ -168,12 +171,17 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         currentPlayer += 1;
         timeRemaining = game.getTimeValueInMillis();
         Player player = players.get(currentPlayer);
+        if (timer != null) {
+            timer.cancel();
+        }
 
         hideWrapperViews();
         nextPlayerWrapper.setVisibility(View.VISIBLE);
         int avatarRes = getResources().getIdentifier(player.getAvatar(), "drawable", getPackageName());
         nextPlayerAvatar.setImageDrawable(getResources().getDrawable(avatarRes));
         nextPlayerNick.setText(player.getName());
+        currentPlayerAvatar.setImageDrawable(getResources().getDrawable(avatarRes));
+        currentPlayerNick.setText(player.getName());
 
     }
 
@@ -198,6 +206,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         };
 
         guessedLocation = null;
+        map.clear();
         Player player = players.get(currentPlayer);
         int avatarRes = getResources().getIdentifier(player.getAvatar(), "drawable", getPackageName());
 
@@ -208,19 +217,32 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
 
     private void submitGuess() {
+
+        int score = 0;
+
         switch (game.getType()) {
             case MAP:
                 if (guessedLocation != null) {
 
                     LatLng correctLocation = game.getGuesses().get(currentTurn).getLocation();
                     double guessTime = game.getTimeValueInMillis() - timeRemaining;
-                    int score = calculateScore(correctLocation, guessedLocation, guessTime, game.getTimeValueInMillis());
-                    SmartLog.Log(SmartLog.LogLevel.DEBUG, "score", String.valueOf(score));
+                    score = calculateScore(correctLocation, guessedLocation, guessTime, game.getTimeValueInMillis());
 
                 }
+                break;
         }
 
+        SmartLog.Log(SmartLog.LogLevel.DEBUG, "score", String.valueOf(score));
+
+        players.get(currentPlayer).addScore(score);
         game.getTurnGuesses().get(currentTurn).add(currentPlayer, guessedLocation);
+        panorama.setPosition(new LatLng(0, 0));
+
+        if (currentPlayer < players.size()) {
+            nextPlayer();
+        } else {
+            nextTurn();
+        }
     }
 
     private int calculateScore(LatLng correctLocation, LatLng guessedLocation, double guessTime, int turnTime) {
@@ -258,7 +280,10 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         panorama.setPosition(guesses.get(currentTurn).getLocation(), 200);
         panorama.setStreetNamesEnabled(false);
 
+        guessedLocation = null;
+
         timer.start();
+        map.clear();
     }
 
     private void showMap() {
@@ -376,6 +401,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 if (guessedLocation != null) {
                     submitGuess();
                 }
+                break;
         }
     }
 
@@ -434,6 +460,8 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         nextPlayerWrapper.setVisibility(View.GONE);
         nextTurnWrapper.setVisibility(View.GONE);
         currentTurnWrapper.setVisibility(View.GONE);
+        mapWrapper.setVisibility(View.GONE);
+        mapBG.setVisibility(View.GONE);
     }
 
 
