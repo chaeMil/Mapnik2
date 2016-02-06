@@ -31,6 +31,7 @@ import cz.mapnik.app.Mapnik;
 import cz.mapnik.app.R;
 import cz.mapnik.app.model.Game;
 import cz.mapnik.app.model.Guess;
+import cz.mapnik.app.model.LocationType;
 import cz.mapnik.app.model.Player;
 import cz.mapnik.app.model.Type;
 import cz.mapnik.app.utils.MapUtils;
@@ -73,6 +74,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private CircleButton mapCloseButton;
     private RelativeLayout mapBG;
     private LatLng guessedLocation;
+    private long timeRemaining;
 
 
     @Override
@@ -130,6 +132,17 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         guessButton.setOnClickListener(this);
         mapWrapper.setOnClickListener(this);
         mapCloseButton.setOnClickListener(this);
+        makeGuessButton.setOnClickListener(this);
+
+        switch (game.getType()) {
+            case MAP:
+                guessButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_maps_map));
+                break;
+            case ADDRESS:
+                guessButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_hardware_keyboard));
+                break;
+        }
+
     }
 
     private void nextTurn() {
@@ -147,6 +160,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private void nextPlayer() {
 
         currentPlayer += 1;
+        timeRemaining = game.getTimeValueInMillis();
         Player player = players.get(currentPlayer);
 
         hideWrapperViews();
@@ -166,7 +180,9 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 int progress = max - (int) millisUntilFinished;
                 int timerValue = (int) (100.0 / (double) max * (double) progress);
                 timeIndicator.setProgress(timerValue);
-                SmartLog.Log(SmartLog.LogLevel.DEBUG, "tick", max + " | " + progress + " | " + timerValue);
+                timeRemaining = millisUntilFinished;
+
+                //SmartLog.Log(SmartLog.LogLevel.DEBUG, "tick", max + " | " + progress + " | " + timerValue);
             }
 
             @Override
@@ -182,6 +198,49 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         currentPlayerNick.setText(player.getName());
         currentPlayerAvatar.setImageDrawable(getResources().getDrawable(avatarRes));
 
+    }
+
+
+    private void submitGuess() {
+        switch (game.getType()) {
+            case MAP:
+                if (guessedLocation != null) {
+
+                    LatLng correctLocation = game.getGuesses().get(currentTurn).getLocation();
+                    double guessTime = game.getTimeValueInMillis() - timeRemaining;
+                    int score = calculateScore(correctLocation, guessedLocation, guessTime, game.getTimeValueInMillis());
+                    SmartLog.Log(SmartLog.LogLevel.DEBUG, "score", String.valueOf(score));
+
+                }
+        }
+    }
+
+    private int calculateScore(LatLng correctLocation, LatLng guessedLocation, double guessTime, int turnTime) {
+
+        int resultTimePercent = 100 - ((int) (100.0 / (double) turnTime * guessTime));
+
+        float maxDistance;
+
+        double distance = (double) MapUtils.distance((float) correctLocation.latitude, (float) correctLocation.longitude,
+                (float) guessedLocation.latitude, (float) guessedLocation.longitude);
+
+        int resultDistancePercent = 0;
+
+        switch (game.getLocationType()) {
+            case LocationType.CITY:
+                LatLng northEastBounds = game.getGameLocation().getNorthEastBound();
+                LatLng southWestBounds = game.getGameLocation().getSouthWestBound();
+                maxDistance = MapUtils.distance((float) northEastBounds.latitude,
+                        (float) northEastBounds.longitude, (float) southWestBounds.latitude,
+                        (float) southWestBounds.longitude);
+
+                resultDistancePercent = 100 - ((int) (100.0 / maxDistance * distance));
+                break;
+        }
+
+        int scorePercentil = (int) ((double) resultDistancePercent + (double) resultTimePercent) / 2;
+
+        return scorePercentil;
     }
 
     private void startTurn() {
@@ -216,7 +275,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
             public void run() {
 
                 if (guessedLocation == null) {
-                    map.clear();
+                    //map.clear();
                     map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 60));
                 }
             }
@@ -277,6 +336,10 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
             case R.id.mapCloseButton:
                 hideMap();
                 break;
+            case R.id.makeGuessButton:
+                if (guessedLocation != null) {
+                    submitGuess();
+                }
         }
     }
 
@@ -286,6 +349,10 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         map.getUiSettings().setAllGesturesEnabled(false);
         map.getUiSettings().setZoomGesturesEnabled(true);
         map.getUiSettings().setScrollGesturesEnabled(true);
+
+        map.addMarker(new MarkerOptions()
+                .position(game.getGuesses().get(currentTurn).getLocation())
+                .snippet("correct location"));
 
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -297,6 +364,9 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
                 map.addMarker(new MarkerOptions()
                         .position(guessedLocation));
+
+                makeGuessButton.setVisibility(View.VISIBLE);
+                YoYo.with(Techniques.BounceInUp).duration(200).playOn(makeGuessButton);
             }
         });
     }
