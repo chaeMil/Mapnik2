@@ -78,7 +78,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void setupUI() {
         playButton.setOnClickListener(this);
         closeButton.setOnClickListener(this);
-        playersAdapter = new PlayersAdapter(this, ((Mapnik) getApplication()).getPlayers(), ((Mapnik) getApplication()), this);
+        playersAdapter = new PlayersAdapter(this,
+                R.layout.player_list,
+                ((Mapnik) getApplication()).getPlayers(),
+                ((Mapnik) getApplication()), this);
     }
 
     @Override

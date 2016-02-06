@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import at.markushi.ui.CircleButton;
 import cz.mapnik.app.Mapnik;
 import cz.mapnik.app.R;
+import cz.mapnik.app.adapter.PlayersAdapter;
 import cz.mapnik.app.model.Game;
 import cz.mapnik.app.model.Guess;
 import cz.mapnik.app.model.LocationType;
@@ -88,6 +90,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private GoogleMap summaryMap;
     private RelativeLayout turnSummaryWrapper;
     private CircleButton summaryConfirmButton;
+    private ListView playersList;
 
 
     @Override
@@ -143,6 +146,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         mapBG = (RelativeLayout) findViewById(R.id.mapBG);
         turnSummaryWrapper = (RelativeLayout) findViewById(R.id.turnSummaryWrapper);
         summaryConfirmButton = (CircleButton) findViewById(R.id.summaryConfirmButton);
+        playersList = (ListView) findViewById(R.id.playersList);
     }
 
     private void setupUI() {
@@ -273,6 +277,8 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 .position(game.getGuesses().get(currentTurn).getLocation())
                 .snippet(getString(R.string.correct_location))
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+        playersList.setAdapter(new PlayersAdapter(this, R.layout.player_list_score, players, null, null));
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {

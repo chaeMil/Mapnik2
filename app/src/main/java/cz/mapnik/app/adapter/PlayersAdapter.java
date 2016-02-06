@@ -25,11 +25,13 @@ public class PlayersAdapter extends ArrayAdapter<Player> {
 
     private final MainActivity mainActivity;
     private final Mapnik app;
+    private final int layout;
 
-    public PlayersAdapter(Context context, ArrayList<Player> players, Mapnik app, MainActivity mainActivity) {
-        super(context, 0, players);
+    public PlayersAdapter(Context context, int layout, ArrayList<Player> players, Mapnik app, MainActivity mainActivity) {
+        super(context, layout, players);
         this.mainActivity = mainActivity;
         this.app = app;
+        this.layout = layout;
     }
 
     @Override
@@ -37,19 +39,27 @@ public class PlayersAdapter extends ArrayAdapter<Player> {
         final Player player = getItem(position);
 
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.player_list, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(layout, parent, false);
         }
 
         TextView name = (TextView) convertView.findViewById(R.id.name);
         ImageView avatar = (ImageView) convertView.findViewById(R.id.avatar);
-        CircleButton remove = (CircleButton) convertView.findViewById(R.id.removePlayer);
 
-        remove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                app.removePlayer(player, mainActivity);
-            }
-        });
+        if (convertView.findViewById(R.id.removePlayer) != null) {
+            CircleButton remove = (CircleButton) convertView.findViewById(R.id.removePlayer);
+
+            remove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    app.removePlayer(player, mainActivity);
+                }
+            });
+        }
+
+        if (convertView.findViewById(R.id.score) != null) {
+            TextView score = (TextView) convertView.findViewById(R.id.score);
+            score.setText(String.valueOf(player.getScore()));
+        }
 
         name.setText(player.getName());
 
