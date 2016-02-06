@@ -18,6 +18,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -309,18 +310,29 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
     private void addMapBoundaries() {
 
-        LatLng topLeft = new LatLng(game.getGameLocation().getNorthEastBound().latitude, game.getGameLocation().getSouthWestBound().longitude);
-        LatLng topRight = new LatLng(game.getGameLocation().getNorthEastBound().latitude, game.getGameLocation().getNorthEastBound().longitude);
-        LatLng bottomLeft = new LatLng(game.getGameLocation().getSouthWestBound().latitude, game.getGameLocation().getSouthWestBound().longitude);
-        LatLng bottomRight = new LatLng(game.getGameLocation().getSouthWestBound().latitude, game.getGameLocation().getNorthEastBound().longitude);
+        if (game.getGameLocation().getSouthWestBound() != null && game.getGameLocation().getNorthEastBound() != null) {
 
-        map.addPolyline(new PolylineOptions()
-                .add(topLeft)
-                .add(topRight)
-                .add(bottomRight)
-                .add(bottomLeft)
-                .add(topLeft)
-                .color(getResources().getColor(R.color.bright_green)));
+            LatLng topLeft = new LatLng(game.getGameLocation().getNorthEastBound().latitude, game.getGameLocation().getSouthWestBound().longitude);
+            LatLng topRight = new LatLng(game.getGameLocation().getNorthEastBound().latitude, game.getGameLocation().getNorthEastBound().longitude);
+            LatLng bottomLeft = new LatLng(game.getGameLocation().getSouthWestBound().latitude, game.getGameLocation().getSouthWestBound().longitude);
+            LatLng bottomRight = new LatLng(game.getGameLocation().getSouthWestBound().latitude, game.getGameLocation().getNorthEastBound().longitude);
+
+            map.addPolyline(new PolylineOptions()
+                    .add(topLeft)
+                    .add(topRight)
+                    .add(bottomRight)
+                    .add(bottomLeft)
+                    .add(topLeft)
+                    .color(getResources().getColor(R.color.bright_green)));
+
+        } else if (game.getGameLocation().getCenter() != null && game.getRadius() != 0) {
+
+            map.addCircle(new CircleOptions()
+                    .center(game.getGameLocation().getCenter())
+                    .radius(game.getRadius())
+                    .strokeColor(getResources().getColor(R.color.bright_green)));
+
+        }
 
     }
 
@@ -380,22 +392,42 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
                 guessedLocation = latLng;
 
-                if (gameBoundaries.contains(guessedLocation)) {
+                if (game.getRadius() != 0) {
+
+                    if (MapUtils.distance((float) guessedLocation.latitude,
+                            (float)guessedLocation.longitude,
+                            (float) game.getGameLocation().getCenter().latitude,
+                            (float) game.getGameLocation().getCenter().longitude) < game.getRadius()) {
+
+                        map.clear();
+
+                        map.addMarker(new MarkerOptions().position(guessedLocation));
+
+                        addMapBoundaries();
+
+                        showMakeGuessButton();
+
+                    }
+
+                } else if (gameBoundaries.contains(guessedLocation)) {
 
                     map.clear();
 
-                    map.addMarker(new MarkerOptions()
-                            .position(guessedLocation));
+                    map.addMarker(new MarkerOptions().position(guessedLocation));
 
                     addMapBoundaries();
 
-                    if (makeGuessButton.getVisibility() != View.VISIBLE) {
-                        makeGuessButton.setVisibility(View.VISIBLE);
-                        YoYo.with(Techniques.BounceInUp).duration(200).playOn(makeGuessButton);
-                    }
+                    showMakeGuessButton();
                 }
             }
         });
+    }
+
+    private void showMakeGuessButton() {
+        if (makeGuessButton.getVisibility() != View.VISIBLE) {
+            makeGuessButton.setVisibility(View.VISIBLE);
+            YoYo.with(Techniques.BounceInUp).duration(200).playOn(makeGuessButton);
+        }
     }
 
     private void hideWrapperViews() {
