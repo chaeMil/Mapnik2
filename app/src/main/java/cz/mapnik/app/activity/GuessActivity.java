@@ -238,7 +238,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         game.getTurnGuesses().get(currentTurn).add(currentPlayer, guessedLocation);
         panorama.setPosition(new LatLng(0, 0));
 
-        if (currentPlayer < players.size()) {
+        if (currentPlayer + 1 < players.size()) {
             nextPlayer();
         } else {
             nextTurn();
