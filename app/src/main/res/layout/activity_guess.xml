@@ -231,4 +231,22 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/lastTurnSummaryWrapper"
+        android:background="@color/dark_green"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/mapSummary"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.google.android.gms.maps.MapFragment"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp" />
+
+
+    </RelativeLayout>
+
 </RelativeLayout>

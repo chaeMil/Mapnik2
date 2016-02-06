@@ -26,7 +26,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 import at.markushi.ui.CircleButton;
 import cz.mapnik.app.Mapnik;
@@ -42,7 +41,8 @@ import cz.mapnik.app.utils.SmartLog;
 /**
  * Created by chaemil on 2.2.16.
  */
-public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaReadyCallback, View.OnClickListener, OnMapReadyCallback {
+public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaReadyCallback,
+        View.OnClickListener {
 
     private static final int MAX_TURNS = 5;
 
@@ -71,14 +71,16 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private CircleButton guessButton;
     private CircleButton makeGuessButton;
     private LinearLayout mapWrapper;
-    private MapFragment mapFragment;
-    private GoogleMap map;
+    private MapFragment guessMapFragment;
+    private GoogleMap guessMap;
     private CircleButton mapCloseButton;
     private RelativeLayout mapBG;
     private LatLng guessedLocation;
     private long timeRemaining;
     private ArrayList<ArrayList> turnGuesses;
     private LatLngBounds gameBoundaries;
+    private MapFragment summaryMapFragment;
+    private GoogleMap summarymap;
 
 
     @Override
@@ -110,9 +112,11 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         streetView = (StreetViewPanoramaFragment) getFragmentManager()
                 .findFragmentById(R.id.streetView);
         streetView.getStreetViewPanoramaAsync(this);
-        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        map = mapFragment.getMap();
+        guessMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        guessMap = guessMapFragment.getMap();
+        guessMap.setOnMapLoadedCallback(guessMapReadyCallback);
+        summaryMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapSummary);
+        summarymap = summaryMapFragment.getMap();
         currentTurnWrapper = (RelativeLayout) findViewById(R.id.currentTurnWrapper);
         nextPlayerWrapper = (RelativeLayout) findViewById(R.id.nextPlayerWrapper);
         nextPlayerAvatar = (ImageView) findViewById(R.id.nextPlayerAvatar);
@@ -162,7 +166,12 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         hideWrapperViews();
 
         nextTurnWrapper.setVisibility(View.VISIBLE);
-        nextTurnIndicator.setProgress((int) (100 / maxTurns * (currentTurn - 0.5)));
+        if (currentTurn == 0) {
+            nextTurnIndicator.setProgress(100 / maxTurns * (currentTurn + 1));
+        } else {
+            nextTurnIndicator.setProgress(100 / maxTurns * currentTurn);
+        }
+
 
     }
 
@@ -213,7 +222,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         };
 
         guessedLocation = null;
-        map.clear();
+        guessMap.clear();
         Player player = players.get(currentPlayer);
         int avatarRes = getResources().getIdentifier(player.getAvatar(), "drawable", getPackageName());
 
@@ -290,7 +299,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         guessedLocation = null;
 
         timer.start();
-        map.clear();
+        guessMap.clear();
     }
 
     private void showMap() {
@@ -314,9 +323,9 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
             public void run() {
 
                 if (guessedLocation == null) {
-                    map.clear();
+                    guessMap.clear();
                     addMapBoundaries();
-                    map.moveCamera(CameraUpdateFactory.newLatLngBounds(gameBoundaries, 60));
+                    guessMap.moveCamera(CameraUpdateFactory.newLatLngBounds(gameBoundaries, 60));
                 }
             }
         }, 250);
@@ -349,7 +358,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
             LatLng bottomLeft = new LatLng(game.getGameLocation().getSouthWestBound().latitude, game.getGameLocation().getSouthWestBound().longitude);
             LatLng bottomRight = new LatLng(game.getGameLocation().getSouthWestBound().latitude, game.getGameLocation().getNorthEastBound().longitude);
 
-            map.addPolyline(new PolylineOptions()
+            guessMap.addPolyline(new PolylineOptions()
                     .add(topLeft)
                     .add(topRight)
                     .add(bottomRight)
@@ -359,7 +368,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
         } else if (game.getGameLocation().getCenter() != null && game.getRadius() != 0) {
 
-            map.addCircle(new CircleOptions()
+            guessMap.addCircle(new CircleOptions()
                     .center(game.getGameLocation().getCenter())
                     .radius(game.getRadius())
                     .strokeColor(getResources().getColor(R.color.bright_green)));
@@ -414,49 +423,52 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         }
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-        map.getUiSettings().setAllGesturesEnabled(false);
-        map.getUiSettings().setZoomGesturesEnabled(true);
-        map.getUiSettings().setScrollGesturesEnabled(true);
 
-        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
+    GoogleMap.OnMapLoadedCallback guessMapReadyCallback = new GoogleMap.OnMapLoadedCallback() {
+        @Override
+        public void onMapLoaded() {
+            guessMap.getUiSettings().setAllGesturesEnabled(false);
+            guessMap.getUiSettings().setZoomGesturesEnabled(true);
+            guessMap.getUiSettings().setScrollGesturesEnabled(true);
 
-                guessedLocation = latLng;
+            guessMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
 
-                if (game.getRadius() != 0) {
+                    guessedLocation = latLng;
 
-                    if (MapUtils.distance((float) guessedLocation.latitude,
-                            (float)guessedLocation.longitude,
-                            (float) game.getGameLocation().getCenter().latitude,
-                            (float) game.getGameLocation().getCenter().longitude) < game.getRadius()) {
+                    if (game.getRadius() != 0) {
 
-                        map.clear();
+                        if (MapUtils.distance((float) guessedLocation.latitude,
+                                (float)guessedLocation.longitude,
+                                (float) game.getGameLocation().getCenter().latitude,
+                                (float) game.getGameLocation().getCenter().longitude) < game.getRadius()) {
 
-                        map.addMarker(new MarkerOptions().position(guessedLocation));
+                            guessMap.clear();
+
+                            guessMap.addMarker(new MarkerOptions().position(guessedLocation));
+
+                            addMapBoundaries();
+
+                            showMakeGuessButton();
+
+                        }
+
+                    } else if (gameBoundaries.contains(guessedLocation)) {
+
+                        guessMap.clear();
+
+                        guessMap.addMarker(new MarkerOptions().position(guessedLocation));
 
                         addMapBoundaries();
 
                         showMakeGuessButton();
-
                     }
-
-                } else if (gameBoundaries.contains(guessedLocation)) {
-
-                    map.clear();
-
-                    map.addMarker(new MarkerOptions().position(guessedLocation));
-
-                    addMapBoundaries();
-
-                    showMakeGuessButton();
                 }
-            }
-        });
-    }
+            });
+        }
+    };
+
 
     private void showMakeGuessButton() {
         if (makeGuessButton.getVisibility() != View.VISIBLE) {
