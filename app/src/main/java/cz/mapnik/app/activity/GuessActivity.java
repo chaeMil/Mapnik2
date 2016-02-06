@@ -268,6 +268,12 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
         if (currentPlayer + 1 >= players.size()) {
             showTurnSummary();
+        } else {
+            if (currentPlayer + 1 < players.size()) {
+                nextPlayer();
+            } else {
+                nextTurn();
+            }
         }
     }
 
