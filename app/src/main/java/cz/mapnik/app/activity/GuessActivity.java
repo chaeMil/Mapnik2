@@ -4,15 +4,24 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import at.markushi.ui.CircleButton;
 import cz.mapnik.app.Mapnik;
@@ -20,12 +29,13 @@ import cz.mapnik.app.R;
 import cz.mapnik.app.model.Game;
 import cz.mapnik.app.model.Guess;
 import cz.mapnik.app.model.Player;
+import cz.mapnik.app.utils.MapUtils;
 import cz.mapnik.app.utils.SmartLog;
 
 /**
  * Created by chaemil on 2.2.16.
  */
-public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaReadyCallback, View.OnClickListener {
+public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaReadyCallback, View.OnClickListener, OnMapReadyCallback {
 
     private static final int MAX_TURNS = 5;
 
@@ -51,6 +61,11 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private ImageView currentPlayerAvatar;
     private TextView currentPlayerNick;
     private CircularFillableLoaders timeIndicator;
+    private CircleButton guessButton;
+    private CircleButton makeGuessButton;
+    private LinearLayout mapWrapper;
+    private MapFragment mapFragment;
+    private GoogleMap map;
 
 
     @Override
@@ -75,6 +90,9 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         streetView = (StreetViewPanoramaFragment) getFragmentManager()
                 .findFragmentById(R.id.streetView);
         streetView.getStreetViewPanoramaAsync(this);
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        map = mapFragment.getMap();
         currentTurnWrapper = (RelativeLayout) findViewById(R.id.currentTurnWrapper);
         nextPlayerWrapper = (RelativeLayout) findViewById(R.id.nextPlayerWrapper);
         nextPlayerAvatar = (ImageView) findViewById(R.id.nextPlayerAvatar);
@@ -86,11 +104,15 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         currentPlayerAvatar = (ImageView) findViewById(R.id.currentPlayerAvatar);
         currentPlayerNick = (TextView) findViewById(R.id.currentPlayerNick);
         timeIndicator = (CircularFillableLoaders) findViewById(R.id.timeIndicator);
+        guessButton = (CircleButton) findViewById(R.id.guessButton);
+        makeGuessButton = (CircleButton) findViewById(R.id.makeGuessButton);
+        mapWrapper = (LinearLayout) findViewById(R.id.mapWrapper);
     }
 
     private void setupUI() {
         nextPlayerConfirm.setOnClickListener(this);
         nextTurnConfirm.setOnClickListener(this);
+        guessButton.setOnClickListener(this);
     }
 
     private void nextTurn() {
@@ -151,7 +173,25 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         panorama.setPosition(guesses.get(currentTurn).getLocation(), 200);
         panorama.setStreetNamesEnabled(false);
 
+        LatLngBounds bounds;
+        if (game.getGameLocation().getNorthEastBound() != null) {
+            bounds = new LatLngBounds(game.getGameLocation().getSouthWestBound(),
+                                        game.getGameLocation().getNorthEastBound());
+        } else {
+            bounds = MapUtils.convertCenterAndRadiusToBounds(game.getGameLocation().getCenter(),
+                    game.getRadius());
+        }
+
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 60));
+
         timer.start();
+    }
+
+    private void showMap() {
+
+        mapWrapper.setVisibility(View.VISIBLE);
+        YoYo.with(Techniques.BounceInUp).duration(200).playOn(mapWrapper);
+
     }
 
     @Override
@@ -179,7 +219,18 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
                 }
                 break;
+            case R.id.guessButton:
+                showMap();
+                break;
         }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        map.getUiSettings().setAllGesturesEnabled(false);
+        map.getUiSettings().setZoomGesturesEnabled(true);
+        map.getUiSettings().setScrollGesturesEnabled(true);
     }
 
     private void hideWrapperViews() {
@@ -187,4 +238,6 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         nextTurnWrapper.setVisibility(View.GONE);
         currentTurnWrapper.setVisibility(View.GONE);
     }
+
+
 }
