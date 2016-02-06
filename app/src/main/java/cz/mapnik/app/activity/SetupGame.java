@@ -97,15 +97,15 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
 
     private void setupUI() {
         typeMap.setOnClickListener(this);
-        typeAddress.setOnClickListener(this);
+        //typeAddress.setOnClickListener(this);
         time_30s.setOnClickListener(this);
         time_1m.setOnClickListener(this);
         time_3min.setOnClickListener(this);
         time_5min.setOnClickListener(this);
         locationCity.setOnClickListener(this);
-        locationMonuments.setOnClickListener(this);
+        //locationMonuments.setOnClickListener(this);
         locationCustom.setOnClickListener(this);
-        locationRandom.setOnClickListener(this);
+        //locationRandom.setOnClickListener(this);
         locationText.setOnClickListener(this);
         previewLocation.setOnClickListener(this);
         close.setOnClickListener(this);

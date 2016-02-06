@@ -41,7 +41,7 @@
                     android:layout_margin="8dp" />
 
                 <at.markushi.ui.CircleButton
-
+                    android:alpha="0.5"
                     android:src="@drawable/ic_hardware_keyboard"
                     android:id="@+id/typeAddress"
                     app:cb_color="@color/bright_green"
@@ -117,7 +117,7 @@
                     android:layout_margin="4dp" />
 
                 <at.markushi.ui.CircleButton
-
+                    android:alpha="0.5"
                     android:src="@drawable/ic_location_monuments"
                     android:id="@+id/location_monuments"
                     app:cb_color="@color/bright_green"
@@ -137,7 +137,7 @@
                     android:layout_margin="4dp" />
 
                 <at.markushi.ui.CircleButton
-
+                    android:alpha="0.5"
                     android:src="@drawable/ic_location_random"
                     android:id="@+id/location_random"
                     app:cb_color="@color/bright_green"
