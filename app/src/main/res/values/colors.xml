@@ -13,4 +13,5 @@
     <color name="yellow_green">#8BC34A</color>
     <color name="brown">#6D4C41</color>
     <color name="dark_brown">#4E342E</color>
+    <color name="black_alpha">#c0000000</color>
 </resources>

@@ -75,9 +75,18 @@
             android:layout_alignParentEnd="true"
             android:layout_margin="12dp" />
 
+        <RelativeLayout
+            android:id="@+id/mapBG"
+            android:visibility="gone"
+            android:background="@color/black_alpha"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </RelativeLayout>
+
         <LinearLayout
             android:id="@+id/mapWrapper"
-            android:background="@color/bright_green_alpha"
+            android:clickable="true"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -116,12 +125,24 @@
                     android:layout_alignParentEnd="true"
                     android:layout_margin="12dp" />
 
+                <at.markushi.ui.CircleButton
+
+                    android:src="@drawable/ic_navigation_close"
+                    android:id="@+id/mapCloseButton"
+                    app:cb_color="@color/red"
+                    app:cb_pressedRingWidth="8dip"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="12dp" />
+
             </RelativeLayout>
 
 
         </LinearLayout>
-
-
 
 
     </RelativeLayout>

@@ -2,6 +2,7 @@ package cz.mapnik.app.activity;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -66,6 +67,8 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private LinearLayout mapWrapper;
     private MapFragment mapFragment;
     private GoogleMap map;
+    private CircleButton mapCloseButton;
+    private RelativeLayout mapBG;
 
 
     @Override
@@ -107,12 +110,16 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         guessButton = (CircleButton) findViewById(R.id.guessButton);
         makeGuessButton = (CircleButton) findViewById(R.id.makeGuessButton);
         mapWrapper = (LinearLayout) findViewById(R.id.mapWrapper);
+        mapCloseButton = (CircleButton) findViewById(R.id.mapCloseButton);
+        mapBG = (RelativeLayout) findViewById(R.id.mapBG);
     }
 
     private void setupUI() {
         nextPlayerConfirm.setOnClickListener(this);
         nextTurnConfirm.setOnClickListener(this);
         guessButton.setOnClickListener(this);
+        mapWrapper.setOnClickListener(this);
+        mapCloseButton.setOnClickListener(this);
     }
 
     private void nextTurn() {
@@ -173,24 +180,49 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         panorama.setPosition(guesses.get(currentTurn).getLocation(), 200);
         panorama.setStreetNamesEnabled(false);
 
-        LatLngBounds bounds;
-        if (game.getGameLocation().getNorthEastBound() != null) {
-            bounds = new LatLngBounds(game.getGameLocation().getSouthWestBound(),
-                                        game.getGameLocation().getNorthEastBound());
-        } else {
-            bounds = MapUtils.convertCenterAndRadiusToBounds(game.getGameLocation().getCenter(),
-                    game.getRadius());
-        }
-
-        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 60));
-
         timer.start();
     }
 
     private void showMap() {
 
         mapWrapper.setVisibility(View.VISIBLE);
-        YoYo.with(Techniques.BounceInUp).duration(200).playOn(mapWrapper);
+        mapBG.setVisibility(View.VISIBLE);
+        YoYo.with(Techniques.SlideInUp).duration(200).playOn(mapWrapper);
+        YoYo.with(Techniques.FadeIn).duration(200).playOn(mapBG);
+
+        final LatLngBounds bounds;
+        if (game.getGameLocation().getNorthEastBound() != null) {
+            bounds = new LatLngBounds(game.getGameLocation().getSouthWestBound(),
+                    game.getGameLocation().getNorthEastBound());
+        } else {
+            bounds = MapUtils.convertCenterAndRadiusToBounds(game.getGameLocation().getCenter(),
+                    game.getRadius());
+        }
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 60));
+            }
+        }, 250);
+
+
+    }
+
+    private void hideMap() {
+
+        YoYo.with(Techniques.SlideOutDown).duration(200).playOn(mapWrapper);
+        YoYo.with(Techniques.FadeOut).duration(200).playOn(mapBG);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mapWrapper.setVisibility(View.GONE);
+                mapBG.setVisibility(View.GONE);
+            }
+        }, 200);
 
     }
 
@@ -221,6 +253,12 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 break;
             case R.id.guessButton:
                 showMap();
+                break;
+            case R.id.mapWrapper:
+                hideMap();
+                break;
+            case R.id.mapCloseButton:
+                hideMap();
                 break;
         }
     }
