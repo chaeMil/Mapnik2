@@ -1,6 +1,7 @@
 package cz.mapnik.app.activity;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -33,8 +34,9 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private StreetViewPanoramaFragment streetView;
     private ArrayList<Player> players;
 
-    private int currentTurn = 0;
-    private int currentPlayer = 0;
+    private CountDownTimer timer;
+    private int currentTurn = -1;
+    private int currentPlayer = -1;
 
     private int maxTurns;
     private RelativeLayout currentTurnWrapper;
@@ -46,6 +48,9 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private RelativeLayout nextTurnWrapper;
     private CircularFillableLoaders nextTurnIndicator;
     private CircleButton nextTurnConfirm;
+    private ImageView currentPlayerAvatar;
+    private TextView currentPlayerNick;
+    private CircularFillableLoaders timeIndicator;
 
 
     @Override
@@ -78,6 +83,9 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         nextTurnWrapper = (RelativeLayout) findViewById(R.id.nextTurnWrapper);
         nextTurnIndicator = (CircularFillableLoaders) findViewById(R.id.nextTurnIndicator);
         nextTurnConfirm = (CircleButton) findViewById(R.id.nextTurnConfirm);
+        currentPlayerAvatar = (ImageView) findViewById(R.id.currentPlayerAvatar);
+        currentPlayerNick = (TextView) findViewById(R.id.currentPlayerNick);
+        timeIndicator = (CircularFillableLoaders) findViewById(R.id.timeIndicator);
     }
 
     private void setupUI() {
@@ -87,17 +95,20 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
     private void nextTurn() {
 
-        int turn = currentTurn + 1;
+        currentPlayer = -1;
+        currentTurn += 1;
+
         hideWrapperViews();
 
         nextTurnWrapper.setVisibility(View.VISIBLE);
-        nextTurnIndicator.setProgress(100 / maxTurns * turn);
+        nextTurnIndicator.setProgress((int) (100 / maxTurns * (currentTurn - 0.5)));
 
     }
 
     private void nextPlayer() {
 
-        Player player = players.get(currentTurn);
+        currentPlayer += 1;
+        Player player = players.get(currentPlayer);
 
         hideWrapperViews();
         nextPlayerWrapper.setVisibility(View.VISIBLE);
@@ -105,6 +116,42 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         nextPlayerAvatar.setImageDrawable(getResources().getDrawable(avatarRes));
         nextPlayerNick.setText(player.getName());
 
+    }
+
+    private void prepareTurn() {
+
+        timer = new CountDownTimer(game.getTimeValueInMillis(), 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                int max = game.getTimeValueInMillis();
+                int progress = max - (int) millisUntilFinished;
+                int timerValue = (int) (100.0 / (double) max * (double) progress);
+                timeIndicator.setProgress(timerValue);
+                SmartLog.Log(SmartLog.LogLevel.DEBUG, "tick", max + " | " + progress + " | " + timerValue);
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        };
+
+        Player player = players.get(currentPlayer);
+        int avatarRes = getResources().getIdentifier(player.getAvatar(), "drawable", getPackageName());
+
+        currentPlayerNick.setText(player.getName());
+        currentPlayerAvatar.setImageDrawable(getResources().getDrawable(avatarRes));
+
+    }
+
+    private void startTurn() {
+        hideWrapperViews();
+        currentTurnWrapper.setVisibility(View.VISIBLE);
+
+        panorama.setPosition(guesses.get(currentTurn).getLocation(), 200);
+        panorama.setStreetNamesEnabled(false);
+
+        timer.start();
     }
 
     @Override
@@ -120,9 +167,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
             case R.id.nextPlayerConfirm:
                 if (currentPlayer < players.size()) {
 
-                    hideWrapperViews();
-                    currentTurnWrapper.setVisibility(View.VISIBLE);
-                    panorama.setPosition(guesses.get(currentTurn).getLocation(), 200);
+                    startTurn();
 
                 }
                 break;
@@ -130,6 +175,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 if (currentTurn <= maxTurns) {
 
                     nextPlayer();
+                    prepareTurn();
 
                 }
                 break;

@@ -7,7 +7,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <RelativeLayout
-        android:visibility="gone"
         android:background="@color/dark_green"
         android:id="@+id/currentTurnWrapper"
         android:layout_width="match_parent"
@@ -19,6 +18,51 @@
             android:layout_width="match_parent"
             android:name="com.google.android.gms.maps.StreetViewPanoramaFragment"
             android:id="@+id/streetView"/>
+
+        <com.mikhaellopez.circularfillableloaders.CircularFillableLoaders
+            android:id="@+id/timeIndicator"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_blank"
+            app:cfl_border="true"
+            app:cfl_border_width="4dp"
+            app:cfl_progress="0"
+            app:cfl_wave_amplitude="0.03"
+            app:cfl_wave_color="@color/bright_green"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="12dp" />
+
+        <ImageView
+            tools:src="@drawable/avatar_w_purple"
+            android:id="@+id/currentPlayerAvatar"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Player 1"
+            android:id="@+id/currentPlayerNick"
+            android:textColor="@color/white"
+            android:singleLine="true"
+            android:shadowRadius="2"
+            android:shadowColor="@color/black"
+            android:textSize="14dp"
+            android:gravity="center_horizontal"
+            android:layout_below="@+id/currentPlayerAvatar"
+            android:layout_alignLeft="@+id/currentPlayerAvatar"
+            android:layout_alignStart="@+id/currentPlayerAvatar"
+            android:layout_alignRight="@+id/currentPlayerAvatar"
+            android:layout_alignEnd="@+id/currentPlayerAvatar" />
+
 
     </RelativeLayout>
 
@@ -70,6 +114,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        tools:visibility="gone"
         android:background="@color/dark_green"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

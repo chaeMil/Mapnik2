@@ -57,6 +57,20 @@ public class Game {
         return time;
     }
 
+    public int getTimeValueInMillis() {
+        switch (time) {
+            case S30:
+                return 30 * 1000;
+            case M1:
+                return 60 * 1000;
+            case M3:
+                return 3 * 60 * 1000;
+            case M5:
+                return 5 * 60 * 1000;
+        }
+        return 0;
+    }
+
     public int getLocationType() {
         return locationType;
     }
