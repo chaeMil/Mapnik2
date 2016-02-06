@@ -1,6 +1,7 @@
 package cz.mapnik.app.activity;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -267,12 +268,19 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         gameBoundaries = new LatLngBounds(game.getGameLocation().getSouthWestBound(),
                 game.getGameLocation().getNorthEastBound());
 
-        summaryMap.moveCamera(CameraUpdateFactory.newLatLngBounds(gameBoundaries, 60));
 
         summaryMap.addMarker(new MarkerOptions()
                 .position(game.getGuesses().get(currentTurn).getLocation())
                 .snippet(getString(R.string.correct_location))
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                summaryMap.moveCamera(CameraUpdateFactory.newLatLngBounds(gameBoundaries, 60));
+            }
+        }, 200);
 
     }
 
@@ -548,9 +556,10 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         @Override
         public void onMapLoaded() {
 
-            guessMap.getUiSettings().setAllGesturesEnabled(false);
-            guessMap.getUiSettings().setZoomGesturesEnabled(true);
-            guessMap.getUiSettings().setScrollGesturesEnabled(true);
+            summaryMap.getUiSettings().setAllGesturesEnabled(false);
+            summaryMap.getUiSettings().setZoomGesturesEnabled(true);
+            summaryMap.getUiSettings().setScrollGesturesEnabled(true);
+            summaryMap.getUiSettings().setMapToolbarEnabled(false);
 
         }
     };
