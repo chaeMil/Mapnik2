@@ -18,7 +18,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ import cz.mapnik.app.R;
 import cz.mapnik.app.model.Game;
 import cz.mapnik.app.model.Guess;
 import cz.mapnik.app.model.Player;
+import cz.mapnik.app.model.Type;
 import cz.mapnik.app.utils.MapUtils;
 import cz.mapnik.app.utils.SmartLog;
 
@@ -69,6 +72,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private GoogleMap map;
     private CircleButton mapCloseButton;
     private RelativeLayout mapBG;
+    private LatLng guessedLocation;
 
 
     @Override
@@ -77,15 +81,21 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         setContentView(R.layout.activity_guess);
 
         game = ((Mapnik) getApplication()).getCurrentGame();
-        guesses = game.getGuesses();
-        players = ((Mapnik) getApplication()).getPlayers();
-        maxTurns = MAX_TURNS;
 
-        getUI();
+        if (game != null && game.getGuesses() != null) {
 
-        setupUI();
+            guesses = game.getGuesses();
+            players = ((Mapnik) getApplication()).getPlayers();
+            maxTurns = MAX_TURNS;
 
-        nextTurn();
+            getUI();
+
+            setupUI();
+
+            nextTurn();
+        } else {
+            finish();
+        }
 
     }
 
@@ -165,6 +175,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
             }
         };
 
+        guessedLocation = null;
         Player player = players.get(currentPlayer);
         int avatarRes = getResources().getIdentifier(player.getAvatar(), "drawable", getPackageName());
 
@@ -203,7 +214,11 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 60));
+
+                if (guessedLocation == null) {
+                    map.clear();
+                    map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 60));
+                }
             }
         }, 250);
 
@@ -252,7 +267,9 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 }
                 break;
             case R.id.guessButton:
-                showMap();
+                if (game.getType().equals(Type.MAP)) {
+                    showMap();
+                }
                 break;
             case R.id.mapWrapper:
                 hideMap();
@@ -269,6 +286,19 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         map.getUiSettings().setAllGesturesEnabled(false);
         map.getUiSettings().setZoomGesturesEnabled(true);
         map.getUiSettings().setScrollGesturesEnabled(true);
+
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+
+                guessedLocation = latLng;
+
+                map.clear();
+
+                map.addMarker(new MarkerOptions()
+                        .position(guessedLocation));
+            }
+        });
     }
 
     private void hideWrapperViews() {
