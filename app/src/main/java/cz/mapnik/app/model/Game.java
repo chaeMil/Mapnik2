@@ -13,6 +13,7 @@ public class Game {
     private int radius;
     private GameLocation gameLocation;
     private ArrayList<Guess> guesses;
+    private ArrayList<ArrayList> turnGuesses = new ArrayList<>();
 
     public Game() {
     }
@@ -79,4 +80,11 @@ public class Game {
         return gameLocation;
     }
 
+    public ArrayList<ArrayList> getTurnGuesses() {
+        return turnGuesses;
+    }
+
+    public void setTurnGuesses(ArrayList<ArrayList> turnGuesses) {
+        this.turnGuesses = turnGuesses;
+    }
 }

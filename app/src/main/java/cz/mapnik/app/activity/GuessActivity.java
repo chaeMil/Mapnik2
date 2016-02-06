@@ -21,6 +21,7 @@ import com.google.android.gms.maps.StreetViewPanoramaFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 
 import java.util.ArrayList;
@@ -75,6 +76,8 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private RelativeLayout mapBG;
     private LatLng guessedLocation;
     private long timeRemaining;
+    private ArrayList<ArrayList> turnGuesses;
+    private LatLngBounds gameBoundaries;
 
 
     @Override
@@ -86,6 +89,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
         if (game != null && game.getGuesses() != null) {
 
+            turnGuesses = game.getTurnGuesses();
             guesses = game.getGuesses();
             players = ((Mapnik) getApplication()).getPlayers();
             maxTurns = MAX_TURNS;
@@ -149,6 +153,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
         currentPlayer = -1;
         currentTurn += 1;
+        turnGuesses.add(currentTurn, new ArrayList());
 
         hideWrapperViews();
 
@@ -213,6 +218,8 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
                 }
         }
+
+        game.getTurnGuesses().get(currentTurn).add(currentPlayer, guessedLocation);
     }
 
     private int calculateScore(LatLng correctLocation, LatLng guessedLocation, double guessTime, int turnTime) {
@@ -260,12 +267,11 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         YoYo.with(Techniques.SlideInUp).duration(200).playOn(mapWrapper);
         YoYo.with(Techniques.FadeIn).duration(200).playOn(mapBG);
 
-        final LatLngBounds bounds;
         if (game.getGameLocation().getNorthEastBound() != null) {
-            bounds = new LatLngBounds(game.getGameLocation().getSouthWestBound(),
+            gameBoundaries = new LatLngBounds(game.getGameLocation().getSouthWestBound(),
                     game.getGameLocation().getNorthEastBound());
         } else {
-            bounds = MapUtils.convertCenterAndRadiusToBounds(game.getGameLocation().getCenter(),
+            gameBoundaries = MapUtils.convertCenterAndRadiusToBounds(game.getGameLocation().getCenter(),
                     game.getRadius());
         }
 
@@ -275,8 +281,9 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
             public void run() {
 
                 if (guessedLocation == null) {
-                    //map.clear();
-                    map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 60));
+                    map.clear();
+                    addMapBoundaries();
+                    map.moveCamera(CameraUpdateFactory.newLatLngBounds(gameBoundaries, 60));
                 }
             }
         }, 250);
@@ -297,6 +304,23 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 mapBG.setVisibility(View.GONE);
             }
         }, 200);
+
+    }
+
+    private void addMapBoundaries() {
+
+        LatLng topLeft = new LatLng(game.getGameLocation().getNorthEastBound().latitude, game.getGameLocation().getSouthWestBound().longitude);
+        LatLng topRight = new LatLng(game.getGameLocation().getNorthEastBound().latitude, game.getGameLocation().getNorthEastBound().longitude);
+        LatLng bottomLeft = new LatLng(game.getGameLocation().getSouthWestBound().latitude, game.getGameLocation().getSouthWestBound().longitude);
+        LatLng bottomRight = new LatLng(game.getGameLocation().getSouthWestBound().latitude, game.getGameLocation().getNorthEastBound().longitude);
+
+        map.addPolyline(new PolylineOptions()
+                .add(topLeft)
+                .add(topRight)
+                .add(bottomRight)
+                .add(bottomLeft)
+                .add(topLeft)
+                .color(getResources().getColor(R.color.bright_green)));
 
     }
 
@@ -350,23 +374,26 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         map.getUiSettings().setZoomGesturesEnabled(true);
         map.getUiSettings().setScrollGesturesEnabled(true);
 
-        map.addMarker(new MarkerOptions()
-                .position(game.getGuesses().get(currentTurn).getLocation())
-                .snippet("correct location"));
-
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
 
                 guessedLocation = latLng;
 
-                map.clear();
+                if (gameBoundaries.contains(guessedLocation)) {
 
-                map.addMarker(new MarkerOptions()
-                        .position(guessedLocation));
+                    map.clear();
 
-                makeGuessButton.setVisibility(View.VISIBLE);
-                YoYo.with(Techniques.BounceInUp).duration(200).playOn(makeGuessButton);
+                    map.addMarker(new MarkerOptions()
+                            .position(guessedLocation));
+
+                    addMapBoundaries();
+
+                    if (makeGuessButton.getVisibility() != View.VISIBLE) {
+                        makeGuessButton.setVisibility(View.VISIBLE);
+                        YoYo.with(Techniques.BounceInUp).duration(200).playOn(makeGuessButton);
+                    }
+                }
             }
         });
     }
