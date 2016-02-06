@@ -1,5 +1,6 @@
 package cz.mapnik.app.activity;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -17,6 +18,8 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -34,6 +37,8 @@ import cz.mapnik.app.model.Guess;
 import cz.mapnik.app.model.LocationType;
 import cz.mapnik.app.model.Player;
 import cz.mapnik.app.model.Type;
+import cz.mapnik.app.utils.BitmapUtils;
+import cz.mapnik.app.utils.DimensUtils;
 import cz.mapnik.app.utils.MapUtils;
 import cz.mapnik.app.utils.SmartLog;
 
@@ -79,7 +84,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private ArrayList<ArrayList> turnGuesses;
     private LatLngBounds gameBoundaries;
     private MapFragment summaryMapFragment;
-    private GoogleMap summarymap;
+    private GoogleMap summaryMap;
     private RelativeLayout turnSummaryWrapper;
     private CircleButton summaryConfirmButton;
 
@@ -117,8 +122,8 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         guessMap = guessMapFragment.getMap();
         guessMap.setOnMapLoadedCallback(guessMapReadyCallback);
         summaryMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapSummary);
-        summarymap = summaryMapFragment.getMap();
-        summarymap.setOnMapLoadedCallback(summaryMapReadyCallback);
+        summaryMap = summaryMapFragment.getMap();
+        summaryMap.setOnMapLoadedCallback(summaryMapReadyCallback);
         currentTurnWrapper = (RelativeLayout) findViewById(R.id.currentTurnWrapper);
         nextPlayerWrapper = (RelativeLayout) findViewById(R.id.nextPlayerWrapper);
         nextPlayerAvatar = (ImageView) findViewById(R.id.nextPlayerAvatar);
@@ -241,6 +246,34 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         hideWrapperViews();
         turnSummaryWrapper.setVisibility(View.VISIBLE);
 
+        ArrayList<LatLng> playerGuesses = game.getTurnGuesses().get(currentTurn);
+        summaryMap.clear();
+        addMapBoundaries();
+
+        for(int g = 0; g < playerGuesses.size(); g++) {
+            if (playerGuesses.get(g) != null) {
+
+                int avatarRes = getResources().getIdentifier(players.get(g).getAvatar(), "drawable", getPackageName());
+                Bitmap avatar = BitmapUtils.drawableToBitmap(getResources().getDrawable(avatarRes));
+                avatar = BitmapUtils.scaleToFitHeight(avatar, (int) DimensUtils.pxFromDp(getApplicationContext(), 40));
+
+                summaryMap.addMarker(new MarkerOptions()
+                        .position(playerGuesses.get(g))
+                        .snippet(players.get(g).getName())
+                        .icon(BitmapDescriptorFactory.fromBitmap(avatar)));
+            }
+        }
+
+        gameBoundaries = new LatLngBounds(game.getGameLocation().getSouthWestBound(),
+                game.getGameLocation().getNorthEastBound());
+
+        summaryMap.moveCamera(CameraUpdateFactory.newLatLngBounds(gameBoundaries, 60));
+
+        summaryMap.addMarker(new MarkerOptions()
+                .position(game.getGuesses().get(currentTurn).getLocation())
+                .snippet(getString(R.string.correct_location))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
     }
 
 
@@ -300,9 +333,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 break;
         }
 
-        int scorePercentil = (int) ((double) resultDistancePercent + (double) resultTimePercent) / 2;
-
-        return scorePercentil;
+        return (int) ((double) resultDistancePercent + (double) resultTimePercent) / 2;
     }
 
     private void startTurn() {
@@ -374,20 +405,41 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
             LatLng bottomLeft = new LatLng(game.getGameLocation().getSouthWestBound().latitude, game.getGameLocation().getSouthWestBound().longitude);
             LatLng bottomRight = new LatLng(game.getGameLocation().getSouthWestBound().latitude, game.getGameLocation().getNorthEastBound().longitude);
 
-            guessMap.addPolyline(new PolylineOptions()
-                    .add(topLeft)
-                    .add(topRight)
-                    .add(bottomRight)
-                    .add(bottomLeft)
-                    .add(topLeft)
-                    .color(getResources().getColor(R.color.bright_green)));
+            if (guessMap != null) {
+                guessMap.addPolyline(new PolylineOptions()
+                        .add(topLeft)
+                        .add(topRight)
+                        .add(bottomRight)
+                        .add(bottomLeft)
+                        .add(topLeft)
+                        .color(getResources().getColor(R.color.bright_green)));
+            }
+
+            if (summaryMap != null) {
+                summaryMap.addPolyline(new PolylineOptions()
+                        .add(topLeft)
+                        .add(topRight)
+                        .add(bottomRight)
+                        .add(bottomLeft)
+                        .add(topLeft)
+                        .color(getResources().getColor(R.color.bright_green_alpha)));
+            }
 
         } else if (game.getGameLocation().getCenter() != null && game.getRadius() != 0) {
 
-            guessMap.addCircle(new CircleOptions()
-                    .center(game.getGameLocation().getCenter())
-                    .radius(game.getRadius())
-                    .strokeColor(getResources().getColor(R.color.bright_green)));
+            if (guessMap != null) {
+                guessMap.addCircle(new CircleOptions()
+                        .center(game.getGameLocation().getCenter())
+                        .radius(game.getRadius())
+                        .strokeColor(getResources().getColor(R.color.bright_green)));
+            }
+
+            if (summaryMap != null)  {
+                summaryMap.addCircle(new CircleOptions()
+                        .center(game.getGameLocation().getCenter())
+                        .radius(game.getRadius())
+                        .strokeColor(getResources().getColor(R.color.bright_green_alpha)));
+            }
 
         }
 

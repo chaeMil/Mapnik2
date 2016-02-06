@@ -10,4 +10,5 @@
     <string name="retry_game_preparation">Game preparation failed. Retry?</string>
     <string name="no">no</string>
     <string name="yes">Yes</string>
+    <string name="correct_location">Correct location</string>
 </resources>
