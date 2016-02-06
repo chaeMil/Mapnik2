@@ -254,7 +254,7 @@
         <ListView
             android:layout_weight="2"
             android:paddingBottom="80dp"
-            android:clipToPadding="true"
+            android:clipToPadding="false"
             android:id="@+id/playersList"
             android:layout_width="wrap_content"
             android:layout_height="200dp"

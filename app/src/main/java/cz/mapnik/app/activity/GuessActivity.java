@@ -1,16 +1,19 @@
 package cz.mapnik.app.activity;
 
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -116,6 +119,23 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
             finish();
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.abort_game)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                    }
+                })
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.create().show();
     }
 
     private void getUI() {
@@ -279,6 +299,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
         playersList.setAdapter(new PlayersAdapter(this, R.layout.player_list_score, players, null, null));
+        playersList.setDividerHeight(0);
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
