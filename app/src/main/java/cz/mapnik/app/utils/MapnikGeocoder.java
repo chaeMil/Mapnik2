@@ -30,7 +30,7 @@ import cz.mapnik.app.model.GameLocation;
 
 public class MapnikGeocoder {
 
-    public static void getCityFromAddress(final String strAddress, final BaseActivity caller) {
+    public static void getLocationFromAddress(final String strAddress, final BaseActivity caller) {
 
         String baseUrl = "http://maps.googleapis.com/maps/api/geocode/json?address=";
 
@@ -63,15 +63,29 @@ public class MapnikGeocoder {
 
                             String cityName = "";
 
+                            boolean addressFound = false;
                             for (int a = 0; a < addressComponents.size(); a++) {
                                 JsonObject addressComponent = addressComponents.get(a).getAsJsonObject();
                                 JsonArray types = addressComponent.get("types").getAsJsonArray();
                                 for (int t = 0; t < types.size(); t++) {
-                                    if (types.get(t).getAsString().equals("locality")) {
-                                        cityName = addressComponent.get("long_name").getAsString();
-                                        break;
+                                    if (!addressFound) {
+                                        String type = types.get(t).getAsString();
+
+                                        if (type.equals("neighborhood")
+                                                || type.equals("sublocality_level_1")
+                                                || type.equals("locality")
+                                                || type.equals("administrative_area_level_2")
+                                                || type.equals("administrative_area_level_1")) {
+
+                                            cityName = addressComponent.get("long_name").getAsString();
+                                            addressFound = true;
+                                        }
                                     }
                                 }
+                            }
+
+                            if (cityName.equals("")) {
+                                cityName = results.get(0).getAsJsonObject().get("formatted_address").getAsString();
                             }
 
                             if (!cityName.equals("")) {

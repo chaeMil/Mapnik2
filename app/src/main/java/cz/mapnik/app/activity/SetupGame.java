@@ -8,7 +8,6 @@ import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -158,7 +157,7 @@ public class SetupGame extends BaseActivity implements View.OnClickListener {
                         cityEditText.removeTextChangedListener(cityEditTextWatcher);
                         geocoderProgress.setVisibility(View.VISIBLE);
                         cityEditText.setEnabled(false);
-                        MapnikGeocoder.getCityFromAddress(cityEditText.getText().toString().trim(), this);
+                        MapnikGeocoder.getLocationFromAddress(cityEditText.getText().toString().trim(), this);
                     } else {
                         locationCityError(true);
                     }
