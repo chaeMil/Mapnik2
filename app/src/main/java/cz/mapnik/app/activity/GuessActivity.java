@@ -289,10 +289,6 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
             }
         }
 
-        gameBoundaries = new LatLngBounds(game.getGameLocation().getSouthWestBound(),
-                game.getGameLocation().getNorthEastBound());
-
-
         summaryMap.addMarker(new MarkerOptions()
                 .position(game.getGuesses().get(currentTurn).getLocation())
                 .snippet(getString(R.string.correct_location))
