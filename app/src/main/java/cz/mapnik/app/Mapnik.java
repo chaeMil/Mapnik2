@@ -2,6 +2,8 @@ package cz.mapnik.app;
 
 import android.app.Application;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import java.util.ArrayList;
 
 import cz.mapnik.app.activity.MainActivity;
@@ -20,6 +22,7 @@ public class Mapnik extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
 
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                         .setDefaultFontPath("fonts/RobotoSlab-Regular.ttf")
