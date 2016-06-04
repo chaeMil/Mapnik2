@@ -180,41 +180,36 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        map.getUiSettings().setMapToolbarEnabled(false);
+        map.getUiSettings().setAllGesturesEnabled(false);
+        map.getUiSettings().setZoomGesturesEnabled(true);
+        map.getUiSettings().setScrollGesturesEnabled(true);
+        map.getUiSettings().setMyLocationButtonEnabled(false);
+
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                map.getUiSettings().setMapToolbarEnabled(false);
-                map.getUiSettings().setAllGesturesEnabled(false);
-                map.getUiSettings().setZoomGesturesEnabled(true);
-                map.getUiSettings().setScrollGesturesEnabled(true);
-                map.getUiSettings().setMyLocationButtonEnabled(false);
+                customLocation = latLng;
 
-                map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                    @Override
-                    public void onMapClick(LatLng latLng) {
-                        customLocation = latLng;
+                map.clear();
+                addCircle();
 
-                        map.clear();
-                        addCircle();
+                if (confirm.getVisibility() != View.VISIBLE) {
+                    confirm.setVisibility(View.VISIBLE);
+                    shrinkButton.setVisibility(View.VISIBLE);
+                    expandButton.setVisibility(View.VISIBLE);
 
-                        if (confirm.getVisibility() != View.VISIBLE) {
-                            confirm.setVisibility(View.VISIBLE);
-                            shrinkButton.setVisibility(View.VISIBLE);
-                            expandButton.setVisibility(View.VISIBLE);
+                    YoYo.with(Techniques.BounceInUp)
+                            .duration(250)
+                            .playOn(confirm);
+                    YoYo.with(Techniques.BounceInUp)
+                            .duration(250)
+                            .playOn(shrinkButton);
+                    YoYo.with(Techniques.BounceInUp)
+                            .duration(250)
+                            .playOn(expandButton);
 
-                            YoYo.with(Techniques.BounceInUp)
-                                    .duration(250)
-                                    .playOn(confirm);
-                            YoYo.with(Techniques.BounceInUp)
-                                    .duration(250)
-                                    .playOn(shrinkButton);
-                            YoYo.with(Techniques.BounceInUp)
-                                    .duration(250)
-                                    .playOn(expandButton);
-
-                        }
-                    }
-                });
+                }
             }
         });
 
