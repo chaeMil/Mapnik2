@@ -16,4 +16,6 @@
     <string name="round_time">Round time:</string>
     <string name="location">Location:</string>
     <string name="show_on_map">Show on map:</string>
+    <string name="turn">Turn</string>
+    <string name="preparing_game">Preparing game...</string>
 </resources>

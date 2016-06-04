@@ -18,4 +18,15 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
+    <TextView
+        android:textAllCaps="true"
+        android:text="@string/preparing_game"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/loading"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:textColor="@color/bright_green"
+        android:textSize="25dp" />
+
 </RelativeLayout>

@@ -73,7 +73,6 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private CircleButton nextPlayerConfirm;
     private StreetViewPanorama panorama;
     private RelativeLayout nextTurnWrapper;
-    private CircularFillableLoaders nextTurnIndicator;
     private CircleButton nextTurnConfirm;
     private ImageView currentPlayerAvatar;
     private TextView currentPlayerNick;
@@ -94,6 +93,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private RelativeLayout turnSummaryWrapper;
     private CircleButton summaryConfirmButton;
     private ListView playersList;
+    private TextView turnNumber;
 
 
     @Override
@@ -154,7 +154,6 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         nextPlayerNick = (TextView) findViewById(R.id.nextPlayerNick);
         nextPlayerConfirm = (CircleButton) findViewById(R.id.nextPlayerConfirm);
         nextTurnWrapper = (RelativeLayout) findViewById(R.id.nextTurnWrapper);
-        nextTurnIndicator = (CircularFillableLoaders) findViewById(R.id.nextTurnIndicator);
         nextTurnConfirm = (CircleButton) findViewById(R.id.nextTurnConfirm);
         currentPlayerAvatar = (ImageView) findViewById(R.id.currentPlayerAvatar);
         currentPlayerNick = (TextView) findViewById(R.id.currentPlayerNick);
@@ -167,6 +166,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         turnSummaryWrapper = (RelativeLayout) findViewById(R.id.turnSummaryWrapper);
         summaryConfirmButton = (CircleButton) findViewById(R.id.summaryConfirmButton);
         playersList = (ListView) findViewById(R.id.playersList);
+        turnNumber = (TextView) findViewById(R.id.turnNumber);
     }
 
     private void setupUI() {
@@ -201,13 +201,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         hideWrapperViews();
 
         nextTurnWrapper.setVisibility(View.VISIBLE);
-        if (currentTurn == 0) {
-            nextTurnIndicator.setProgress(100 / maxTurns * (currentTurn + 1));
-        } else {
-            nextTurnIndicator.setProgress(100 / maxTurns * currentTurn);
-        }
-
-
+        turnNumber.setText(String.valueOf((currentTurn += 1) + "."));
     }
 
     private void nextPlayer() {
