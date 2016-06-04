@@ -1,20 +1,21 @@
 package cz.mapnik.app;
 
-import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
+
 import java.util.ArrayList;
 
 import cz.mapnik.app.activity.MainActivity;
 import cz.mapnik.app.model.Game;
 import cz.mapnik.app.model.Player;
+import io.fabric.sdk.android.Fabric;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
  * Created by chaemil on 2.2.16.
  */
-public class Mapnik extends Application {
+public class Mapnik extends MultiDexApplication {
 
     private ArrayList<Player> players;
     private Game currentGame;

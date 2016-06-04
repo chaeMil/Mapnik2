@@ -15,3 +15,19 @@
 #-keepclassmembers class fqcn.of.javascript.interfaces.for.webview {
 #   public *;
 #}
+
+-dontnote org.apache.*
+-dontwarn com.google.common.**
+-dontwarn com.viewpagerindicator.**
+-dontwarn it.sephiroth.**
+-keep class cz.mapnik.app.** { *; }
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+-keep class android.support.v8.renderscript.** { *; }
+
+# fixes for Fabric to get crashes
+-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
+-keep public class * extends java.lang.Exception
+-printmapping build/outputs/mapping/release/mapping.t

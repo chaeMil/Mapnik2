@@ -12,4 +12,8 @@
     <string name="yes">Yes</string>
     <string name="correct_location">Correct location</string>
     <string name="abort_game">Abort game?</string>
+    <string name="game_type">Game type:</string>
+    <string name="round_time">Round time:</string>
+    <string name="location">Location:</string>
+    <string name="show_on_map">Show on map:</string>
 </resources>
