@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -34,6 +36,12 @@ public class BaseActivity extends AppCompatActivity implements GeocoderCallbacks
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        Log.i("key pressed", String.valueOf(event.getKeyCode()));
+        return super.dispatchKeyEvent(event);
     }
 
     private void getUI() {

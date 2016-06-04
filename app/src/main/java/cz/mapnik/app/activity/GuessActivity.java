@@ -17,9 +17,11 @@ import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
@@ -151,11 +153,9 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 .findFragmentById(R.id.streetView);
         streetView.getStreetViewPanoramaAsync(this);
         guessMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-        guessMap = guessMapFragment.getMap();
-        guessMap.setOnMapLoadedCallback(guessMapReadyCallback);
+        guessMapFragment.getMapAsync(guessMapReadyCallback);
         summaryMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapSummary);
-        summaryMap = summaryMapFragment.getMap();
-        summaryMap.setOnMapLoadedCallback(summaryMapReadyCallback);
+        summaryMapFragment.getMapAsync(summaryMapReadyCallback);
         currentTurnWrapper = (RelativeLayout) findViewById(R.id.currentTurnWrapper);
         nextPlayerWrapper = (RelativeLayout) findViewById(R.id.nextPlayerWrapper);
         nextPlayerAvatar = (ImageView) findViewById(R.id.nextPlayerAvatar);
@@ -197,10 +197,6 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 guessButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_hardware_keyboard));
                 break;
         }
-
-        if (currentTurn == 1) {
-            showChromeOSPanHint();
-        }
     }
 
     private void abortGame() {
@@ -213,14 +209,14 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
             String prefix = "android.resource://" + getPackageName() + "/";
             Ion.with(this).load(prefix + R.drawable.pan_hint).intoImageView(panHintImage);
             panHintWrapper.setVisibility(View.VISIBLE);
-            YoYo.with(Techniques.FadeOut).delay(2500).duration(500).playOn(panHintWrapper);
+            YoYo.with(Techniques.FadeOut).delay(4500).duration(500).playOn(panHintWrapper);
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     panHintWrapper.setVisibility(View.GONE);
                 }
-            }, 3000);
+            }, 5000);
         }
     }
 
@@ -341,7 +337,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
             public void run() {
                 summaryMap.moveCamera(CameraUpdateFactory.newLatLngBounds(gameBoundaries, 60));
             }
-        }, 200);
+        }, 500);
 
     }
 
@@ -417,6 +413,10 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
         timer.start();
         guessMap.clear();
+
+        if (currentTurn == 0) {
+            showChromeOSPanHint();
+        }
     }
 
     private void showMap() {
@@ -569,9 +569,10 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     }
 
 
-    GoogleMap.OnMapLoadedCallback guessMapReadyCallback = new GoogleMap.OnMapLoadedCallback() {
+    OnMapReadyCallback guessMapReadyCallback = new OnMapReadyCallback() {
         @Override
-        public void onMapLoaded() {
+        public void onMapReady(GoogleMap googleMap) {
+            guessMap = googleMap;
             guessMap.getUiSettings().setAllGesturesEnabled(false);
             guessMap.getUiSettings().setZoomGesturesEnabled(true);
             guessMap.getUiSettings().setScrollGesturesEnabled(true);
@@ -614,15 +615,14 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         }
     };
 
-    GoogleMap.OnMapLoadedCallback summaryMapReadyCallback = new GoogleMap.OnMapLoadedCallback() {
+    OnMapReadyCallback summaryMapReadyCallback = new OnMapReadyCallback() {
         @Override
-        public void onMapLoaded() {
-
+        public void onMapReady(GoogleMap googleMap) {
+            summaryMap = googleMap;
             summaryMap.getUiSettings().setAllGesturesEnabled(false);
             summaryMap.getUiSettings().setZoomGesturesEnabled(true);
             summaryMap.getUiSettings().setScrollGesturesEnabled(true);
             summaryMap.getUiSettings().setMapToolbarEnabled(false);
-
         }
     };
 
@@ -642,6 +642,4 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         mapBG.setVisibility(View.GONE);
         turnSummaryWrapper.setVisibility(View.GONE);
     }
-
-
 }
