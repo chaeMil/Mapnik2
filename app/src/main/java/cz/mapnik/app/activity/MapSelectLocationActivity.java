@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.InputDevice;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -12,6 +14,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -93,6 +96,22 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
         }
     }
 
+    private void zoomIn() {
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(map.getCameraPosition().target)
+                .zoom(map.getCameraPosition().zoom + 1)
+                .build();
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    private void zoomOut() {
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(map.getCameraPosition().target)
+                .zoom(map.getCameraPosition().zoom - 1)
+                .build();
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
     private void addCircle() {
         Circle circle = map.addCircle(new CircleOptions()
                 .center(customLocation)
@@ -106,6 +125,21 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
         LatLngBounds bounds = MapUtils.convertCenterAndRadiusToBounds(customLocation, radius);
 
         map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200));
+    }
+
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        if (0 != (event.getSource() & InputDevice.SOURCE_CLASS_POINTER)) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_SCROLL:
+                    if (event.getAxisValue(MotionEvent.AXIS_VSCROLL) < 0.0f)
+                        zoomIn();
+                    else
+                        zoomOut();
+                    return true;
+            }
+        }
+        return super.onGenericMotionEvent(event);
     }
 
     @Override
