@@ -113,17 +113,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_margin="12dp" />
-
-        <ImageView
-            tools:src="@drawable/avatar_w_purple"
-            android:id="@+id/currentPlayerAvatar"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="6dp" />
 
@@ -143,6 +133,35 @@
             android:layout_alignStart="@+id/currentPlayerAvatar"
             android:layout_alignRight="@+id/currentPlayerAvatar"
             android:layout_alignEnd="@+id/currentPlayerAvatar" />
+
+        <ImageView
+            tools:src="@drawable/avatar_w_purple"
+            android:id="@+id/currentPlayerAvatar"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="0:35"
+            android:id="@+id/currentTime"
+            android:textColor="@color/white"
+            android:singleLine="true"
+            android:shadowRadius="2"
+            android:shadowColor="@color/black"
+            android:textSize="14dp"
+            android:gravity="center_horizontal"
+            android:layout_below="@+id/timeIndicator"
+            android:layout_alignLeft="@+id/timeIndicator"
+            android:layout_alignStart="@+id/timeIndicator"
+            android:layout_alignRight="@+id/timeIndicator"
+            android:layout_alignEnd="@+id/timeIndicator" />
 
         <RelativeLayout
             android:visibility="gone"

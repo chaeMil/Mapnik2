@@ -33,7 +33,10 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.koushikdutta.ion.Ion;
 import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import at.markushi.ui.CircleButton;
 import cz.mapnik.app.Mapnik;
@@ -98,6 +101,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private TextView turnNumber;
     private RelativeLayout panHintWrapper;
     private ImageView panHintImage;
+    private TextView currentTime;
 
 
     @Override
@@ -131,7 +135,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         builder.setMessage(R.string.abort_game)
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        finish();
+                        abortGame();
                     }
                 })
                 .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -173,6 +177,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         turnNumber = (TextView) findViewById(R.id.turnNumber);
         panHintWrapper = (RelativeLayout) findViewById(R.id.panGestureHint);
         panHintImage = (ImageView) findViewById(R.id.panHintImage);
+        currentTime = (TextView) findViewById(R.id.currentTime);
     }
 
     private void setupUI() {
@@ -196,6 +201,11 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         if (currentTurn == 1) {
             showChromeOSPanHint();
         }
+    }
+
+    private void abortGame() {
+        timer.cancel();
+        finish();
     }
 
     private void showChromeOSPanHint() {
@@ -255,6 +265,13 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
     }
 
+    private String formatTime(long millis) {
+        long second = (millis / 1000) % 60;
+        long minute = (millis / (1000 * 60)) % 60;
+
+        return String.format("%02d:%02d", minute, second);
+    }
+
     private void prepareTurn() {
 
         timer = new CountDownTimer(game.getTimeValueInMillis(), 1000) {
@@ -266,12 +283,14 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 timeIndicator.setProgress(timerValue);
                 timeRemaining = millisUntilFinished;
 
+                currentTime.setText(formatTime(millisUntilFinished));
+
                 //SmartLog.Log(SmartLog.LogLevel.DEBUG, "tick", max + " | " + progress + " | " + timerValue);
             }
 
             @Override
             public void onFinish() {
-
+                submitGuess();
             }
         };
 
@@ -333,13 +352,9 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
         switch (game.getType()) {
             case MAP:
-                if (guessedLocation != null) {
-
-                    LatLng correctLocation = game.getGuesses().get(currentTurn).getLocation();
-                    double guessTime = game.getTimeValueInMillis() - timeRemaining;
-                    score = calculateScore(correctLocation, guessedLocation, guessTime, game.getTimeValueInMillis());
-
-                }
+                LatLng correctLocation = game.getGuesses().get(currentTurn).getLocation();
+                double guessTime = game.getTimeValueInMillis() - timeRemaining;
+                score = calculateScore(correctLocation, guessedLocation, guessTime, game.getTimeValueInMillis());
                 break;
         }
 
@@ -362,28 +377,33 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
     private int calculateScore(LatLng correctLocation, LatLng guessedLocation, double guessTime, int turnTime) {
 
-        int resultTimePercent = 100 - ((int) (100.0 / (double) turnTime * guessTime));
+        if (guessedLocation == null) {
+            return 0;
+        } else {
 
-        float maxDistance;
+            int resultTimePercent = 100 - ((int) (100.0 / (double) turnTime * guessTime));
 
-        double distance = (double) MapUtils.distance((float) correctLocation.latitude, (float) correctLocation.longitude,
-                (float) guessedLocation.latitude, (float) guessedLocation.longitude);
+            float maxDistance;
 
-        int resultDistancePercent = 0;
+            double distance = (double) MapUtils.distance((float) correctLocation.latitude, (float) correctLocation.longitude,
+                    (float) guessedLocation.latitude, (float) guessedLocation.longitude);
 
-        switch (game.getLocationType()) {
-            case LocationType.CITY:
-                LatLng northEastBounds = game.getGameLocation().getNorthEastBound();
-                LatLng southWestBounds = game.getGameLocation().getSouthWestBound();
-                maxDistance = MapUtils.distance((float) northEastBounds.latitude,
-                        (float) northEastBounds.longitude, (float) southWestBounds.latitude,
-                        (float) southWestBounds.longitude);
+            int resultDistancePercent = 0;
 
-                resultDistancePercent = 100 - ((int) (100.0 / maxDistance * distance));
-                break;
+            switch (game.getLocationType()) {
+                case LocationType.CITY:
+                    LatLng northEastBounds = game.getGameLocation().getNorthEastBound();
+                    LatLng southWestBounds = game.getGameLocation().getSouthWestBound();
+                    maxDistance = MapUtils.distance((float) northEastBounds.latitude,
+                            (float) northEastBounds.longitude, (float) southWestBounds.latitude,
+                            (float) southWestBounds.longitude);
+
+                    resultDistancePercent = 100 - ((int) (100.0 / maxDistance * distance));
+                    break;
+            }
+
+            return (int) ((double) resultDistancePercent + (double) resultTimePercent) / 2;
         }
-
-        return (int) ((double) resultDistancePercent + (double) resultTimePercent) / 2;
     }
 
     private void startTurn() {
