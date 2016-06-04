@@ -1,13 +1,18 @@
 package cz.mapnik.app.activity;
 
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.view.OrientationEventListener;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -27,6 +32,7 @@ import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -104,7 +110,10 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private RelativeLayout panHintWrapper;
     private ImageView panHintImage;
     private TextView currentTime;
-
+    private CircleButton zoomInSummary;
+    private CircleButton zoomOutSummary;
+    private CircleButton zoomInGuess;
+    private CircleButton zoomOutGuess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,6 +187,10 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         panHintWrapper = (RelativeLayout) findViewById(R.id.panGestureHint);
         panHintImage = (ImageView) findViewById(R.id.panHintImage);
         currentTime = (TextView) findViewById(R.id.currentTime);
+        zoomInSummary = (CircleButton) findViewById(R.id.zoomInSummary);
+        zoomOutSummary = (CircleButton) findViewById(R.id.zoomOutSummary);
+        zoomInGuess = (CircleButton) findViewById(R.id.zoomInGuess);
+        zoomOutGuess = (CircleButton) findViewById(R.id.zoomOutGuess);
     }
 
     private void setupUI() {
@@ -188,6 +201,18 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         mapCloseButton.setOnClickListener(this);
         makeGuessButton.setOnClickListener(this);
         summaryConfirmButton.setOnClickListener(this);
+
+        if (ChromeOSUtils.isRunningInChromeOS()) {
+            zoomInSummary.setVisibility(View.VISIBLE);
+            zoomOutSummary.setVisibility(View.VISIBLE);
+            zoomInGuess.setVisibility(View.VISIBLE);
+            zoomOutGuess.setVisibility(View.VISIBLE);
+
+            zoomInSummary.setOnClickListener(this);
+            zoomOutSummary.setOnClickListener(this);
+            zoomInGuess.setOnClickListener(this);
+            zoomOutGuess.setOnClickListener(this);
+        }
 
         switch (game.getType()) {
             case MAP:
@@ -202,6 +227,22 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private void abortGame() {
         timer.cancel();
         finish();
+    }
+
+    private void zoomIn(GoogleMap map) {
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(map.getCameraPosition().target)
+                .zoom(map.getCameraPosition().zoom + 1)
+                .build();
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    private void zoomOut(GoogleMap map) {
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(map.getCameraPosition().target)
+                .zoom(map.getCameraPosition().zoom - 1)
+                .build();
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     private void showChromeOSPanHint() {
@@ -301,6 +342,8 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     }
 
     private void showTurnSummary() {
+
+        timer.cancel();
 
         hideWrapperViews();
         turnSummaryWrapper.setVisibility(View.VISIBLE);
@@ -564,6 +607,18 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 } else {
                     nextTurn();
                 }
+                break;
+            case R.id.zoomInSummary:
+                zoomIn(summaryMap);
+                break;
+            case R.id.zoomOutSummary:
+                zoomOut(summaryMap);
+                break;
+            case R.id.zoomInGuess:
+                zoomIn(guessMap);
+                break;
+            case R.id.zoomOutGuess:
+                zoomOut(guessMap);
                 break;
         }
     }

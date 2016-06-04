@@ -1,6 +1,7 @@
 package cz.mapnik.app.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,12 +27,14 @@ public class PlayersAdapter extends ArrayAdapter<Player> {
     private final MainActivity mainActivity;
     private final Mapnik app;
     private final int layout;
+    private final Context context;
 
     public PlayersAdapter(Context context, int layout, ArrayList<Player> players, Mapnik app, MainActivity mainActivity) {
         super(context, layout, players);
         this.mainActivity = mainActivity;
         this.app = app;
         this.layout = layout;
+        this.context = context;
     }
 
     @Override
@@ -58,6 +61,10 @@ public class PlayersAdapter extends ArrayAdapter<Player> {
 
         if (convertView.findViewById(R.id.score) != null) {
             TextView score = (TextView) convertView.findViewById(R.id.score);
+
+            Typeface myTypeface = Typeface.createFromAsset(context.getAssets(), "fonts/RobotoSlab-Regular.ttf");
+            score.setTypeface(myTypeface);
+
             score.setText(String.valueOf(player.getScore()));
         }
 

@@ -46,7 +46,8 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <View
                 android:layout_weight="2"
@@ -68,6 +69,33 @@
                     android:name="com.google.android.gms.maps.MapFragment"
                     android:layout_marginLeft="12dp"
                     android:layout_marginRight="12dp" />
+
+                <at.markushi.ui.CircleButton
+                    android:src="@drawable/ic_minus"
+                    android:id="@+id/zoomOutGuess"
+                    app:cb_color="@color/bright_purple"
+                    app:cb_pressedRingWidth="8dip"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:layout_gravity="center_horizontal"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:layout_alignTop="@+id/zoomInGuess"
+                    android:layout_toLeftOf="@+id/zoomInGuess" />
+
+                <at.markushi.ui.CircleButton
+                    android:src="@drawable/ic_plus"
+                    android:id="@+id/zoomInGuess"
+                    app:cb_color="@color/bright_purple"
+                    app:cb_pressedRingWidth="8dip"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignRight="@+id/map"
+                    android:layout_alignEnd="@+id/map" />
 
                 <at.markushi.ui.CircleButton
                     android:src="@drawable/ic_action_done"
@@ -220,7 +248,7 @@
             android:layout_below="@+id/nextPlayerAvatar"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="25dp"
-            android:textColor="@color/bright_green"
+            android:textColor="@color/white"
             android:singleLine="true"
             android:shadowRadius="2"
             android:shadowColor="@color/black"
@@ -295,34 +323,73 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/mapSummary"
-            android:layout_weight="1"
+        <LinearLayout
+            android:id="@+id/turnSummaryLinearLayout"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:name="com.google.android.gms.maps.MapFragment"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_above="@+id/playersList"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="@dimen/activity_horizontal_margin"
-            android:layout_marginBottom="@dimen/activity_horizontal_margin" />
+            android:layout_height="match_parent">
 
-        <ListView
-            android:layout_weight="2"
-            android:paddingBottom="80dp"
-            android:clipToPadding="false"
-            android:id="@+id/playersList"
-            android:layout_width="wrap_content"
-            android:layout_height="200dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_marginBottom="@dimen/activity_horizontal_margin">
+            <RelativeLayout
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        </ListView>
+                <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/mapSummary"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:name="com.google.android.gms.maps.MapFragment"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="@dimen/activity_horizontal_margin"
+                    android:layout_marginBottom="@dimen/activity_horizontal_margin" />
+
+                <at.markushi.ui.CircleButton
+                    android:src="@drawable/ic_plus"
+                    android:id="@+id/zoomInSummary"
+                    app:cb_color="@color/bright_purple"
+                    app:cb_pressedRingWidth="8dip"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_alignRight="@+id/mapSummary"
+                    android:layout_alignEnd="@+id/mapSummary"
+                    android:layout_alignTop="@+id/mapSummary" />
+
+                <at.markushi.ui.CircleButton
+                    android:src="@drawable/ic_minus"
+                    android:id="@+id/zoomOutSummary"
+                    app:cb_color="@color/bright_purple"
+                    app:cb_pressedRingWidth="8dip"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:layout_gravity="center_horizontal"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:layout_alignTop="@+id/mapSummary"
+                    android:layout_toLeftOf="@+id/zoomInSummary"
+                    android:layout_toStartOf="@+id/zoomInSummary" />
+
+            </RelativeLayout>
+
+            <ListView
+                android:layout_weight="1"
+                android:paddingBottom="80dp"
+                android:clipToPadding="false"
+                android:id="@+id/playersList"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginBottom="80dp">
+
+            </ListView>
+
+        </LinearLayout>
 
         <at.markushi.ui.CircleButton
             android:src="@drawable/ic_action_done"
@@ -331,12 +398,13 @@
             app:cb_pressedRingWidth="8dip"
             android:layout_width="90dp"
             android:layout_height="90dp"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="16dp" />
+            android:layout_alignParentBottom="true"
+            android:layout_margin="8dp" />
 
 
     </RelativeLayout>
+
+
 
 </RelativeLayout>

@@ -104,14 +104,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.singlePlayerButton:
                 ((Mapnik) getApplication()).resetGame();
                 startSinglePlayer = true;
-                createPlayerDialog();
+                createPlayerDialog(false);
                 break;
             case R.id.multiPlayerButton:
                 ((Mapnik) getApplication()).resetGame();
                 createPlayersDialog(true);
                 break;
             case R.id.addPlayerButton:
-                createPlayerDialog();
+                createPlayerDialog(true);
                 break;
             case R.id.createPlayerButton:
                 int cont = 0;
@@ -167,7 +167,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         createPlayDialog.show();
     }
 
-    private void createPlayerDialog() {
+    private void createPlayerDialog(boolean multiplayer) {
         createPlayerDialog = new Dialog(this);
         createPlayerDialog.setCanceledOnTouchOutside(false);
         createPlayerDialog.setContentView(R.layout.player_dialog);
@@ -222,6 +222,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         createPlayerButton = (CircleButton) createPlayerDialog.findViewById(R.id.createPlayerButton);
         playerNameEditText = (AppCompatEditText) createPlayerDialog.findViewById(R.id.playerNameEditText);
         avatars = (GridLayout) createPlayerDialog.findViewById(R.id.avatars);
+
+        if (multiplayer) {
+            playerNameEditText.setText(getString(R.string.app_name) + " "
+                    + (((Mapnik) getApplication()).getPlayers().size() + 1));
+        }
+        playerNameEditText.setSelection(playerNameEditText.getText().length());
 
         createPlayerButton.setOnClickListener(this);
         playerNameEditText.setOnClickListener(this);
