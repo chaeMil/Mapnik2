@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import at.markushi.ui.CircleButton;
 import cz.mapnik.app.R;
+import cz.mapnik.app.utils.ChromeOSUtils;
 import cz.mapnik.app.utils.MapUtils;
 
 /**
@@ -45,6 +46,8 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
     private int radius;
     private CircleButton expandButton;
     private CircleButton shrinkButton;
+    private CircleButton zoomIn;
+    private CircleButton zoomOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,8 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
         cancel = (CircleButton) findViewById(R.id.closeButton);
         expandButton = (CircleButton) findViewById(R.id.expandButton);
         shrinkButton = (CircleButton) findViewById(R.id.shrinkButton);
+        zoomIn = (CircleButton) findViewById(R.id.zoomIn);
+        zoomOut = (CircleButton) findViewById(R.id.zoomOut);
     }
 
     private void setupUI() {
@@ -74,6 +79,13 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
         cancel.setOnClickListener(this);
         expandButton.setOnClickListener(this);
         shrinkButton.setOnClickListener(this);
+        zoomIn.setOnClickListener(this);
+        zoomOut.setOnClickListener(this);
+
+        if (ChromeOSUtils.isRunningInChromeOS()) {
+            zoomIn.setVisibility(View.VISIBLE);
+            zoomOut.setVisibility(View.VISIBLE);
+        }
     }
 
     private void shrink() {
@@ -128,21 +140,6 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
     }
 
     @Override
-    public boolean onGenericMotionEvent(MotionEvent event) {
-        if (0 != (event.getSource() & InputDevice.SOURCE_CLASS_POINTER)) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_SCROLL:
-                    if (event.getAxisValue(MotionEvent.AXIS_VSCROLL) < 0.0f)
-                        zoomIn();
-                    else
-                        zoomOut();
-                    return true;
-            }
-        }
-        return super.onGenericMotionEvent(event);
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.confirm:
@@ -166,6 +163,12 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
                 break;
             case R.id.shrinkButton:
                 shrink();
+                break;
+            case R.id.zoomIn:
+                zoomIn();
+                break;
+            case R.id.zoomOut:
+                zoomOut();
                 break;
         }
     }

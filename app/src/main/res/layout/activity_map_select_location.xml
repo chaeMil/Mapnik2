@@ -12,7 +12,6 @@
         android:name="com.google.android.gms.maps.MapFragment"/>
 
     <at.markushi.ui.CircleButton
-
         android:src="@drawable/ic_navigation_close"
         android:id="@+id/closeButton"
         app:cb_color="@color/red"
@@ -27,8 +26,7 @@
         tools:visibility="visible"/>
 
     <at.markushi.ui.CircleButton
-
-        android:src="@drawable/ic_plus"
+        android:src="@drawable/ic_expand"
         android:id="@+id/expandButton"
         app:cb_color="@color/bright_green"
         app:cb_pressedRingWidth="8dip"
@@ -39,11 +37,12 @@
         android:layout_gravity="center_horizontal"
         android:layout_above="@+id/shrinkButton"
         android:layout_alignLeft="@+id/shrinkButton"
-        android:layout_alignStart="@+id/shrinkButton" />
+        android:layout_alignStart="@+id/shrinkButton"
+        android:layout_alignRight="@+id/shrinkButton"
+        android:layout_alignEnd="@+id/shrinkButton" />
 
     <at.markushi.ui.CircleButton
-
-        android:src="@drawable/ic_minus"
+        android:src="@drawable/ic_shrink"
         android:id="@+id/shrinkButton"
         app:cb_color="@color/bright_green"
         app:cb_pressedRingWidth="8dip"
@@ -53,11 +52,12 @@
         android:visibility="gone"
         tools:visibility="visible"
         android:layout_above="@+id/confirm"
+        android:layout_alignLeft="@+id/confirm"
+        android:layout_alignStart="@+id/confirm"
         android:layout_alignRight="@+id/confirm"
         android:layout_alignEnd="@+id/confirm" />
 
     <at.markushi.ui.CircleButton
-
         android:src="@drawable/ic_action_done"
         android:id="@+id/confirm"
         app:cb_color="@color/bright_green"
@@ -71,6 +71,57 @@
         tools:visibility="visible"
         android:layout_marginRight="12dp"
         android:layout_marginBottom="12dp" />
+
+
+    <at.markushi.ui.CircleButton
+        android:src="@drawable/ic_plus"
+        android:id="@+id/zoomIn"
+        app:cb_color="@color/bright_purple"
+        app:cb_pressedRingWidth="8dip"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="12dp" />
+
+    <at.markushi.ui.CircleButton
+        android:src="@drawable/ic_minus"
+        android:id="@+id/zoomOut"
+        app:cb_color="@color/bright_purple"
+        app:cb_pressedRingWidth="8dip"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_alignTop="@+id/zoomIn"
+        android:layout_toLeftOf="@+id/zoomIn"
+        android:layout_toStartOf="@+id/zoomIn" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="@string/select_location_hint"
+        android:id="@+id/hint"
+        android:layout_alignLeft="@+id/closeButton"
+        android:layout_alignStart="@+id/closeButton"
+        android:layout_toLeftOf="@+id/zoomOut"
+        android:layout_toStartOf="@+id/zoomOut"
+        android:background="@drawable/location_hint_bg"
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:layout_marginRight="8dp"
+        android:textSize="11dp" />
 
 
 </RelativeLayout>
