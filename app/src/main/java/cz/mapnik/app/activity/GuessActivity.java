@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.koushikdutta.ion.Ion;
 import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import cz.mapnik.app.model.LocationType;
 import cz.mapnik.app.model.Player;
 import cz.mapnik.app.model.Type;
 import cz.mapnik.app.utils.BitmapUtils;
+import cz.mapnik.app.utils.ChromeOSUtils;
 import cz.mapnik.app.utils.DimensUtils;
 import cz.mapnik.app.utils.MapUtils;
 import cz.mapnik.app.utils.SmartLog;
@@ -94,6 +96,8 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private CircleButton summaryConfirmButton;
     private ListView playersList;
     private TextView turnNumber;
+    private RelativeLayout panHintWrapper;
+    private ImageView panHintImage;
 
 
     @Override
@@ -167,6 +171,8 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         summaryConfirmButton = (CircleButton) findViewById(R.id.summaryConfirmButton);
         playersList = (ListView) findViewById(R.id.playersList);
         turnNumber = (TextView) findViewById(R.id.turnNumber);
+        panHintWrapper = (RelativeLayout) findViewById(R.id.panGestureHint);
+        panHintImage = (ImageView) findViewById(R.id.panHintImage);
     }
 
     private void setupUI() {
@@ -187,6 +193,25 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                 break;
         }
 
+        if (currentTurn == 1) {
+            showChromeOSPanHint();
+        }
+    }
+
+    private void showChromeOSPanHint() {
+        if (ChromeOSUtils.isRunningInChromeOS()) {
+            String prefix = "android.resource://" + getPackageName() + "/";
+            Ion.with(this).load(prefix + R.drawable.pan_hint).intoImageView(panHintImage);
+            panHintWrapper.setVisibility(View.VISIBLE);
+            YoYo.with(Techniques.FadeOut).delay(2500).duration(500).playOn(panHintWrapper);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    panHintWrapper.setVisibility(View.GONE);
+                }
+            }, 3000);
+        }
     }
 
     private void nextTurn() {
@@ -201,7 +226,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         hideWrapperViews();
 
         nextTurnWrapper.setVisibility(View.VISIBLE);
-        turnNumber.setText(String.valueOf((currentTurn += 1) + "."));
+        turnNumber.setText(String.valueOf((currentTurn + 1) + "."));
     }
 
     private void nextPlayer() {

@@ -7,7 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <RelativeLayout
-        tools:visibility="gone"
+        tools:visibility="visible"
         android:background="@color/dark_green"
         android:id="@+id/currentTurnWrapper"
         android:layout_width="match_parent"
@@ -98,7 +98,6 @@
 
             </RelativeLayout>
 
-
         </LinearLayout>
 
         <com.mikhaellopez.circularfillableloaders.CircularFillableLoaders
@@ -144,6 +143,34 @@
             android:layout_alignStart="@+id/currentPlayerAvatar"
             android:layout_alignRight="@+id/currentPlayerAvatar"
             android:layout_alignEnd="@+id/currentPlayerAvatar" />
+
+        <RelativeLayout
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:clickable="false"
+            android:id="@+id/panGestureHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@color/black_alpha"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/panHintImage"
+                tools:src="@drawable/pan_hint"
+                android:layout_width="200dp"
+                android:layout_height="200dp" />
+
+            <TextView
+                android:text="@string/pan_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/panHintImage"
+                android:layout_marginTop="16dp" />
+
+        </RelativeLayout>
+
 
 
     </RelativeLayout>
@@ -198,7 +225,7 @@
     </RelativeLayout>
 
     <RelativeLayout
-        tools:visibility="visible"
+        tools:visibility="gone"
         android:background="@color/dark_green"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
