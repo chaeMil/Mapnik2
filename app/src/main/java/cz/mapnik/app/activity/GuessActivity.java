@@ -114,6 +114,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
     private CircleButton zoomOutSummary;
     private CircleButton zoomInGuess;
     private CircleButton zoomOutGuess;
+    private RelativeLayout streetViewWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,6 +192,7 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
         zoomOutSummary = (CircleButton) findViewById(R.id.zoomOutSummary);
         zoomInGuess = (CircleButton) findViewById(R.id.zoomInGuess);
         zoomOutGuess = (CircleButton) findViewById(R.id.zoomOutGuess);
+        streetViewWrapper = (RelativeLayout) findViewById(R.id.streetViewWrapper);
     }
 
     private void setupUI() {
@@ -477,6 +479,10 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
                     game.getRadius());
         }
 
+        if (ChromeOSUtils.isRunningInChromeOS()) {
+            streetViewWrapper.setVisibility(View.GONE);
+        }
+
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -497,6 +503,10 @@ public class GuessActivity extends BaseActivity implements OnStreetViewPanoramaR
 
         YoYo.with(Techniques.SlideOutDown).duration(200).playOn(mapWrapper);
         YoYo.with(Techniques.FadeOut).duration(200).playOn(mapBG);
+
+        if (ChromeOSUtils.isRunningInChromeOS()) {
+            streetViewWrapper.setVisibility(View.VISIBLE);
+        }
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {

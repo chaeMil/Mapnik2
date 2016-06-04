@@ -13,11 +13,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <fragment
-            android:layout_height="match_parent"
+        <RelativeLayout
+            android:id="@+id/streetViewWrapper"
             android:layout_width="match_parent"
-            android:name="com.google.android.gms.maps.StreetViewPanoramaFragment"
-            android:id="@+id/streetView"/>
+            android:layout_height="match_parent">
+
+            <fragment
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:name="com.google.android.gms.maps.StreetViewPanoramaFragment"
+                android:id="@+id/streetView"/>
+
+        </RelativeLayout>
 
         <at.markushi.ui.CircleButton
             android:src="@drawable/ic_maps_map"

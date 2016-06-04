@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
+import android.view.View;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -107,5 +108,13 @@ public class BitmapUtils {
         float factorW = width / (float) b.getWidth();
         return Bitmap.createScaledBitmap(b, (int) (b.getWidth() * factorW),
                 (int) (b.getHeight() * factorH), false);
+    }
+
+    public static Bitmap loadBitmapFromView(View v, int width, int height) {
+        Bitmap b = Bitmap.createBitmap(width , height, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        v.layout(0, 0, v.getLayoutParams().width, v.getLayoutParams().height);
+        v.draw(c);
+        return b;
     }
 }
