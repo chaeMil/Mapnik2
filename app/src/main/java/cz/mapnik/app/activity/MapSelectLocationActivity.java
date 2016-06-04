@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -48,6 +49,7 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
     private CircleButton shrinkButton;
     private CircleButton zoomIn;
     private CircleButton zoomOut;
+    private TextView hintText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,7 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
         shrinkButton = (CircleButton) findViewById(R.id.shrinkButton);
         zoomIn = (CircleButton) findViewById(R.id.zoomIn);
         zoomOut = (CircleButton) findViewById(R.id.zoomOut);
+        hintText = (TextView) findViewById(R.id.hint);
     }
 
     private void setupUI() {
@@ -85,6 +88,7 @@ public class MapSelectLocationActivity extends BaseActivity implements OnMapRead
         if (ChromeOSUtils.isRunningInChromeOS()) {
             zoomIn.setVisibility(View.VISIBLE);
             zoomOut.setVisibility(View.VISIBLE);
+            hintText.setTextSize(18);
         }
     }
 
