@@ -121,7 +121,7 @@
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
         android:layout_marginRight="8dp"
-        android:textSize="11dp" />
+        android:textSize="13dp" />
 
 
 </RelativeLayout>
